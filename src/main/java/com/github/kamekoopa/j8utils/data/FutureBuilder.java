@@ -29,7 +29,7 @@ public class FutureBuilder {
 	private <A> Supplier<CompletableFuture<A>> supplyAsync(Supplier<A> supplier){
 
 		return () -> executorOpt.fold(
-			LazyVal.of(() -> CompletableFuture.supplyAsync(supplier)),
+			() -> CompletableFuture.supplyAsync(supplier),
 			executor -> CompletableFuture.supplyAsync(supplier, executor)
 		);
 	}
@@ -37,7 +37,7 @@ public class FutureBuilder {
 	private <A, B> Supplier<CompletableFuture<B>> thenApplyAsync(Function<A, B> f, CompletableFuture<A> future){
 
 		return () -> executorOpt.fold(
-			LazyVal.of(() -> future.thenApplyAsync(f)),
+			() -> future.thenApplyAsync(f),
 			executor -> future.thenApplyAsync(f, executor)
 		);
 	}
@@ -45,7 +45,7 @@ public class FutureBuilder {
 	private <A, B> Supplier<CompletableFuture<B>> thenComposeAsync(Function<A, CompletableFuture<B>> f, CompletableFuture<A> future){
 
 		return () -> executorOpt.fold(
-			LazyVal.of(() -> future.thenComposeAsync(f)),
+			() -> future.thenComposeAsync(f),
 			executor -> future.thenComposeAsync(f, executor)
 		);
 	}

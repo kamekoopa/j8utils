@@ -1,7 +1,6 @@
 package com.github.kamekoopa.j8utils.utils;
 
 
-import com.github.kamekoopa.j8utils.data.LazyVal;
 import com.github.kamekoopa.j8utils.data.Option;
 import com.github.kamekoopa.j8utils.data.Tuple2;
 import org.junit.Before;
@@ -11,11 +10,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.*;
-import java.util.function.Function;
 
 import static com.github.kamekoopa.j8utils.utils.Utils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(Enclosed.class)
@@ -40,7 +40,7 @@ public class UtilsTest {
 		public void headOptionでNoneが取得できる() throws Exception {
 
 			Option<String> option = headOption(list);
-			assertThat(option, instanceOf(Option.None.class));
+			assertTrue(option.isNone());
 		}
 
 		@Test(expected = NoSuchElementException.class)
@@ -52,7 +52,7 @@ public class UtilsTest {
 		public void getで要素を取得しようとするとNoneで取得できる() throws Exception {
 
 			Option<String> option = get(list, 0);
-			assertThat(option, instanceOf(Option.None.class));
+			assertTrue(option.isNone());
 		}
 
 		@Test
@@ -99,8 +99,8 @@ public class UtilsTest {
 		public void headOptionで最初の要素をくるんだSomeが取得できる() throws Exception {
 
 			Option<String> option = headOption(list);
-			assertThat(option, instanceOf(Option.Some.class));
-			assertThat(option.fold(LazyVal.of(() -> ""), Function.identity()), is("first"));
+			assertTrue(option.isSome());
+			assertThat(option.getOrElse(() -> ""), is("first"));
 		}
 
 		@Test
@@ -114,8 +114,8 @@ public class UtilsTest {
 		public void getでSomeにくるまれた要素が取得できる() throws Exception {
 
 			Option<String> option = get(list, 2);
-			assertThat(option, instanceOf(Option.Some.class));
-			assertThat(option.fold(LazyVal.of(() -> ""), Function.identity()), is("third"));
+			assertTrue(option.isSome());
+			assertThat(option.getOrElse(() -> ""), is("third"));
 		}
 
 		@Test
@@ -172,7 +172,7 @@ public class UtilsTest {
 		public void getすると値がNoneで取得できる() throws Exception {
 
 			Option<Integer> option = get(map, "key");
-			assertThat(option, instanceOf(Option.None.class));
+			assertTrue(option.isNone());
 		}
 	}
 
@@ -194,8 +194,8 @@ public class UtilsTest {
 		public void getすると値をくるんだSomeが取得できる() throws Exception {
 
 			Option<Integer> option = get(map, "key2");
-			assertThat(option, instanceOf(Option.Some.class));
-			assertThat(option.fold(LazyVal.of(() -> -1), Function.identity()), is(2));
+			assertTrue(option.isSome());
+			assertThat(option.getOrElse(() -> -1), is(2));
 		}
 	}
 }

@@ -6,24 +6,23 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class Option<A> implements Iterable<A> {
 
 	private static final None none = new None();
 
-	@SuppressWarnings("unchecked")
 	public static <A> Option<A> of(A a){
 		if(a == null){
-			return none;
+			return none();
 		}else{
 			return new Some<>(a);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <A> Option<A> from(Optional<A> optional){
 		if( optional == null || !optional.isPresent() ) {
-			return none;
+			return none();
 		}else{
 			return of(optional.get());
 		}
@@ -34,6 +33,10 @@ public abstract class Option<A> implements Iterable<A> {
 		return none;
 	}
 
+	public abstract boolean isSome();
+
+	public abstract boolean isNone();
+
 	public abstract <B> Option<B> map(Function<A, B> f);
 
 	public abstract <B> Option<B> mape(FE1<A, B> f) throws Exception;
@@ -42,8 +45,9 @@ public abstract class Option<A> implements Iterable<A> {
 
 	public abstract <B> Option<B> flatMap(FE1<A, Option<B>> f) throws Exception;
 
-	public abstract <B> B fold(LazyVal<B> none, Function<A, B> f);
+	public abstract <B> B fold(Supplier<B> none, Function<A, B> f);
 
+	public abstract A getOrElse(Supplier<A> def);
 
 
 	public static final class Some<A> extends Option<A> {
@@ -52,6 +56,16 @@ public abstract class Option<A> implements Iterable<A> {
 
 		private Some(A a) {
 			this.a = a;
+		}
+
+		@Override
+		public boolean isSome() {
+			return true;
+		}
+
+		@Override
+		public boolean isNone() {
+			return false;
 		}
 
 		@Override
@@ -75,8 +89,13 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public <B> B fold(LazyVal<B> none, Function<A, B> f) {
+		public <B> B fold(Supplier<B> none, Function<A, B> f) {
 			return f.apply(a);
+		}
+
+		@Override
+		public A getOrElse(Supplier<A> def){
+			return a;
 		}
 
 		@Override
@@ -99,10 +118,40 @@ public abstract class Option<A> implements Iterable<A> {
 				}
 			};
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof Some)) return false;
+
+			Some some = (Some) o;
+
+			return a.equals(some.a);
+		}
+
+		@Override
+		public int hashCode() {
+			return a.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return "Some("+a+")";
+		}
 	}
 
 	public static final class None<A> extends Option<A> {
 		private None(){}
+
+		@Override
+		public boolean isSome() {
+			return false;
+		}
+
+		@Override
+		public boolean isNone() {
+			return true;
+		}
 
 		@Override
 		public <B> Option<B> map(Function<A, B> f) {
@@ -125,8 +174,13 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public <B> B fold(LazyVal<B> none, Function<A, B> f) {
+		public <B> B fold(Supplier<B> none, Function<A, B> f) {
 			return none.get();
+		}
+
+		@Override
+		public A getOrElse(Supplier<A> def){
+			return def.get();
 		}
 
 		@Override
@@ -142,6 +196,11 @@ public abstract class Option<A> implements Iterable<A> {
 					throw new NoSuchElementException("none");
 				}
 			};
+		}
+
+		@Override
+		public String toString() {
+			return "None";
 		}
 	}
 }
