@@ -4,14 +4,9 @@ import com.github.kamekoopa.j8utils.data.Option;
 import com.github.kamekoopa.j8utils.data.Try;
 import com.github.kamekoopa.j8utils.data.Tuple2;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 public class Utils {
 
@@ -88,5 +83,72 @@ public class Utils {
 		}
 
 		return list;
+	}
+
+	public static <A> Stream<Tuple2<Integer, A>> zipWithIndex(Stream<A> stream1){
+		return zip(Stream.iterate(0, i -> i + 1), stream1);
+	}
+
+	public static <A, B> Stream<Tuple2<A, B>> zip(Stream<A> stream1, Stream<B> stream2){
+		return zipWith(stream1, stream2, Tuple2::of);
+	}
+
+	public static <A, B, C> Stream<C> zipWith(Stream<A> stream1, Stream<B> stream2, BiFunction<A, B, C> f){
+
+		Zipped<A, B, C> zipped = new Zipped<>(stream1.spliterator(), stream2.spliterator(), f);
+		return StreamSupport.stream(() -> zipped, zipped.characteristics(), false);
+	}
+
+	private static class Zipped<A, B, C> implements Spliterator<C> {
+
+		private final Spliterator<A> a;
+		private final Spliterator<B> b;
+		private final BiFunction<A, B, C> f;
+		private final int characteristics;
+		private final long estimateSize;
+
+		public Zipped(Spliterator<A> a, Spliterator<B> b, BiFunction<A, B, C> f) {
+			this.a = Objects.requireNonNull(a);
+			this.b = Objects.requireNonNull(b);
+			this.f = f;
+			this.characteristics = a.characteristics() & b.characteristics();
+			this.estimateSize = Math.min(a.estimateSize(), b.estimateSize());
+		}
+
+		@Override
+		public boolean tryAdvance(Consumer<? super C> action) {
+
+			boolean[] bHasRemaining = { false };
+			boolean aHasRemaining = this.a.tryAdvance(_a ->
+				bHasRemaining[0] = this.b.tryAdvance(_b ->
+					action.accept(f.apply(_a, _b))
+				)
+			);
+
+			return aHasRemaining && bHasRemaining[0];
+		}
+
+		@Override
+		public Spliterator<C> trySplit() {
+
+			Spliterator<A> a = this.a.trySplit();
+			Spliterator<B> b = this.b.trySplit();
+
+			if(a == null || b == null) {
+				return null;
+			}else{
+				return new Zipped<>(a, b, f);
+			}
+		}
+
+		@Override
+		public long estimateSize() {
+			return estimateSize;
+		}
+
+		@Override
+		public int characteristics() {
+			return characteristics;
+		}
 	}
 }
