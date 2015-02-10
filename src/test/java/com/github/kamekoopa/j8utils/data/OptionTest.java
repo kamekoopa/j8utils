@@ -73,6 +73,11 @@ public class OptionTest {
 			assertTrue(none.isNone());
 		}
 
+		@Test(expected = Exception.class)
+		public void flatMap例外透過版は例外を透過する() throws Exception {
+			option.flatMape(s -> {throw new Exception("");});
+		}
+
 		@Test
 		public void getOrElseでくるまれている値を取得できる() throws Exception {
 
@@ -151,6 +156,13 @@ public class OptionTest {
 		public void flatMapでも関数は実行されないのでsomeには出来ない() throws Exception {
 
 			assertTrue(option.flatMap(s -> Option.of(s.length())).isNone());
+		}
+
+		@Test
+		public void flatMap例外透過版で例外を投げても実行されないのでスローされない() throws Exception {
+			assertTrue(
+				option.flatMape(s -> {throw new Exception("");}).isNone()
+			);
 		}
 
 		@Test
