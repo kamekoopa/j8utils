@@ -1,8 +1,10 @@
 package com.github.kamekoopa.j8utils.data;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -26,29 +28,6 @@ public class FutureBuilder {
 		return new Future<>(supplier);
 	}
 
-	private <A> Supplier<CompletableFuture<A>> supplyAsync(Supplier<A> supplier){
-
-		return () -> executorOpt.fold(
-			() -> CompletableFuture.supplyAsync(supplier),
-			executor -> CompletableFuture.supplyAsync(supplier, executor)
-		);
-	}
-
-	private <A, B> Supplier<CompletableFuture<B>> thenApplyAsync(Function<A, B> f, CompletableFuture<A> future){
-
-		return () -> executorOpt.fold(
-			() -> future.thenApplyAsync(f),
-			executor -> future.thenApplyAsync(f, executor)
-		);
-	}
-
-	private <A, B> Supplier<CompletableFuture<B>> thenComposeAsync(Function<A, CompletableFuture<B>> f, CompletableFuture<A> future){
-
-		return () -> executorOpt.fold(
-			() -> future.thenComposeAsync(f),
-			executor -> future.thenComposeAsync(f, executor)
-		);
-	}
 
 
 	public class Future<A> {
@@ -56,7 +35,7 @@ public class FutureBuilder {
 		private final CompletableFuture<A> underlying;
 
 		private Future(Supplier<A> supplier) {
-			this.underlying = supplyAsync(supplier).get();
+			this.underlying = supplyAsync(supplier);
 		}
 
 		private Future(CompletableFuture<A> underlying) {
@@ -64,26 +43,78 @@ public class FutureBuilder {
 		}
 
 		public <B> Future<B> map(Function<A, B> f) {
-			return new Future<>(
-				thenApplyAsync(f, this.underlying).get()
-			);
+			return new Future<>(thenApplyAsync(f));
 		}
 
 		public <B> Future<B> flatMap(Function<A, Future<B>> f) {
 			return new Future<>(
-				thenComposeAsync(
-					v -> f.apply(v).underlying,
-					this.underlying
-				).get()
+				thenComposeAsync(v -> f.apply(v).underlying)
 			);
 		}
 
-		public <B> B get(Function<A, B> success, Function<Exception, B> failure){
-			return Try.of(this.underlying::get).fold(success, failure);
+		public <B> B get(Function<A, B> success, Function<Throwable, B> failure){
+
+			return Try.of(() -> {
+				try {
+					return Future.this.underlying.get();
+				} catch (ExecutionException e) {
+					throw e.getCause();
+				} catch (Throwable e) {
+					throw e;
+				}
+			}).fold(success, failure);
 		}
 
-		public <B> B get(Function<A, B> success, Function<Exception, B> failure, long time, TimeUnit unit){
-			return Try.of(() -> this.underlying.get(time, unit)).fold(success, failure);
+		public <B> B get(Function<A, B> success, Function<Throwable, B> failure, long time, TimeUnit unit){
+			return Try.of(() -> {
+				try {
+					return this.underlying.get(time, unit);
+				} catch (ExecutionException e) {
+					throw e.getCause();
+				} catch (Throwable e) {
+					throw e;
+				}
+			}).fold(success, failure);
+		}
+
+
+		private CompletableFuture<A> supplyAsync(Supplier<A> supplier){
+
+			return applyExecutor(
+				CompletableFuture::supplyAsync,
+				CompletableFuture::supplyAsync,
+				supplier
+			);
+		}
+
+		private <B> CompletableFuture<B> thenApplyAsync(Function<A, B> f) {
+
+			return applyExecutor(
+				this.underlying::thenApplyAsync,
+				this.underlying::thenApplyAsync,
+				f
+			);
+		}
+
+		private <B> CompletableFuture<B> thenComposeAsync(Function<A, CompletableFuture<B>> f) {
+
+			return applyExecutor(
+				this.underlying::thenComposeAsync,
+				this.underlying::thenComposeAsync,
+				f
+			);
+		}
+
+		private <X, B> CompletableFuture<B> applyExecutor(
+			Function<X, CompletableFuture<B>> f1,
+			BiFunction<X, Executor, CompletableFuture<B>> f2,
+		    X x
+		) {
+
+			return executorOpt.fold(
+				() -> f1.apply(x),
+				executor -> f2.apply(x, executor)
+			);
 		}
 	}
 }

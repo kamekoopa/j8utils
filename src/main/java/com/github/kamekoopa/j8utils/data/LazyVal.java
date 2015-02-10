@@ -24,7 +24,7 @@ public class LazyVal<A> {
 		return cache;
 	}
 
-	public A gete() throws Exception {
+	public A gete() throws Throwable {
 
 		if(cache == null){
 			this.cache = supplier.gete();

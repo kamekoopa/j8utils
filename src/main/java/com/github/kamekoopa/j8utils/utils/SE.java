@@ -9,10 +9,10 @@ public interface SE<T> extends Supplier<T> {
 	public default T get() {
 		try {
 			return gete();
-		}catch (Exception e){
+		}catch (Throwable e){
 			throw new RuntimeException(e);
 		}
 	}
 
-	public T gete() throws Exception;
+	public T gete() throws Throwable;
 }

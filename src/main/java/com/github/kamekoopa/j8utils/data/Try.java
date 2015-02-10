@@ -10,7 +10,7 @@ public abstract class Try<A> {
 	public static <A> Try<A> of(SE<A> supplier){
 		try {
 			return new Success<>(supplier.gete());
-		}catch (Exception e){
+		}catch (Throwable e){
 			return new Failure<>(e);
 		}
 	}
@@ -19,7 +19,7 @@ public abstract class Try<A> {
 		return new Success<>(a);
 	}
 
-	public static <A> Failure<A> failure(Exception e){
+	public static <A> Failure<A> failure(Throwable e){
 		return new Failure<>(e);
 	}
 
@@ -33,11 +33,11 @@ public abstract class Try<A> {
 
 	public abstract Option<A> toOption();
 
-	public abstract Either<Exception, A> toEither();
+	public abstract Either<Throwable, A> toEither();
 
-	public abstract <B> B fold(Function<A, B> success, Function<Exception, B> failure);
+	public abstract <B> B fold(Function<A, B> success, Function<Throwable, B> failure);
 
-	public abstract A fallback(Function<Exception, A> f);
+	public abstract A fallback(Function<Throwable, A> f);
 
 
 
@@ -55,7 +55,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public Either<Exception, A> toEither() {
+		public Either<Throwable, A> toEither() {
 			return Either.right(a);
 		}
 
@@ -80,12 +80,12 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> B fold(Function<A, B> success, Function<Exception, B> failure) {
+		public <B> B fold(Function<A, B> success, Function<Throwable, B> failure) {
 			return success.apply(a);
 		}
 
 		@Override
-		public A fallback(Function<Exception, A> f) {
+		public A fallback(Function<Throwable, A> f) {
 			return a;
 		}
 	}
@@ -93,9 +93,9 @@ public abstract class Try<A> {
 
 	public static final class Failure<A> extends Try<A> {
 
-		private final Exception e;
+		private final Throwable e;
 
-		private Failure(Exception e) {
+		private Failure(Throwable e) {
 			this.e = e;
 		}
 
@@ -105,7 +105,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public Either<Exception, A> toEither() {
+		public Either<Throwable, A> toEither() {
 			return Either.left(e);
 		}
 
@@ -130,12 +130,12 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> B fold(Function<A, B> success, Function<Exception, B> failure) {
+		public <B> B fold(Function<A, B> success, Function<Throwable, B> failure) {
 			return failure.apply(e);
 		}
 
 		@Override
-		public A fallback(Function<Exception, A> f) {
+		public A fallback(Function<Throwable, A> f) {
 			return f.apply(e);
 		}
 	}
