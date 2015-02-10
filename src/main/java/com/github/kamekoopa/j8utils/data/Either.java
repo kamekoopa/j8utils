@@ -7,11 +7,11 @@ import java.util.function.Function;
 public abstract class Either<A, B> {
 
 	public static <X, B> Left<X, B> left(X a){
-		return new Left<X, B>(a);
+		return new Left<>(a);
 	}
 
 	public static <A, X> Right<A, X> right(X b){
-		return new Right<A, X>(b);
+		return new Right<>(b);
 	}
 
 	public abstract boolean isLeft();
