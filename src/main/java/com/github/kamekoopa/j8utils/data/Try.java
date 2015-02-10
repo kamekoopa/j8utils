@@ -39,6 +39,10 @@ public abstract class Try<A> {
 
 	public abstract A fallback(Function<Throwable, A> f);
 
+	public abstract boolean isSuccess();
+
+	public abstract boolean isFailure();
+
 
 
 	public static final class Success<A> extends Try<A> {
@@ -87,6 +91,16 @@ public abstract class Try<A> {
 		@Override
 		public A fallback(Function<Throwable, A> f) {
 			return a;
+		}
+
+		@Override
+		public boolean isSuccess() {
+			return true;
+		}
+
+		@Override
+		public boolean isFailure() {
+			return false;
 		}
 	}
 
@@ -137,6 +151,16 @@ public abstract class Try<A> {
 		@Override
 		public A fallback(Function<Throwable, A> f) {
 			return f.apply(e);
+		}
+
+		@Override
+		public boolean isSuccess() {
+			return false;
+		}
+
+		@Override
+		public boolean isFailure() {
+			return true;
 		}
 	}
 }
