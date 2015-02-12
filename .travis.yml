@@ -1,6 +1,6 @@
 env:
   global:
-    secure: "NmIiRi2pXP1LsRVOtAIVcgEY7lOoawfBfDwTJfallXjOOZpwSAkerG0vemBhQAJgdt3K3IBWA1AXYyP+1g3u++cTaAhoauHyn4Ia7uj3/2xrchX1gTQ8Qv/pGS7lUbFrWkc6aDTGJ+1f+K8MmwVqd9LcGrN2nSnIrXPotZBQvXU="
+    secure: "ZwRocRs3G13Gm7ZUDj5yZHGlLgBnlyMmUTduBEex0fhEZIOIZhLZtyasKTxHyi4M/p1+5oxDjyDksUTWQ/DPz03zodu5zfe4qnx/jeiNA0qZgppwf3Qh5JIy/1lYLjiXFyp3OQHuQwAqsELxWPnQt1Xjg2yoXNyy3ZXKtTgjtM8="
 language: java
 jdk:
   - oraclejdk8

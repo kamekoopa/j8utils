@@ -34,8 +34,8 @@ publishing {
 }
 
 bintray {
-    user = hasProperty('bintraycfg.user') ? project.property('bintraycfg.user') : System.getenv('bintraycfg.user')
-    key = hasProperty('bintraycfg.key') ? project.property('bintraycfg.key') : System.getenv('bintraycfg.key')
+    user = project.hasProperty('bintraycfg.user') ? project.property('bintraycfg.user') : System.getenv('bintraycfg_user')
+    key = project.hasProperty('bintraycfg.key') ? project.property('bintraycfg.key') : System.getenv('bintraycfg_key')
 
     publications = ['mod']
 
