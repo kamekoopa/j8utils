@@ -1,4 +1,4 @@
-# j8utils
+# j8utils [![Build Status](https://travis-ci.org/kamekoopa/j8utils.png)](https://travis-ci.org/kamekoopa/j8utils)
 オレオレユーティリティ
 
 * IterableでfoldのあるOption
