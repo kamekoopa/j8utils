@@ -21,6 +21,10 @@ import java.util.function.BiFunction;
 @FunctionalInterface
 public interface FE2<A, B, C> extends BiFunction<A, B, C> {
 
+	public static <A, B, C> FE2<A, B, C> from(BiFunction<A, B, C> f){
+		return f::apply;
+	}
+
 	@Override
 	public default C apply(A a, B b) {
 		try {
@@ -31,4 +35,12 @@ public interface FE2<A, B, C> extends BiFunction<A, B, C> {
 	}
 
 	public C applye(A A, B b) throws Exception;
+
+	public default FE2<B, A, C> flip() {
+		return (b, a) -> this.apply(a, b);
+	}
+
+	public default FE1<A, FE1<B, C>> curried() {
+		return a -> b -> this.apply(a, b);
+	}
 }
