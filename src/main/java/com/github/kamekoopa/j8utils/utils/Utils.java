@@ -36,6 +36,19 @@ public class Utils {
 		return Try.of(() -> map.get(key)).toOption();
 	}
 
+	public static <K, V> Stream<Tuple2<K, V>> keyValueStream(Map<K, V> map) {
+		return mapper(map.entrySet().stream());
+	}
+
+	public static <K, V> Stream<Tuple2<K, V>> keyValuePStream(Map<K, V> map) {
+		return mapper(map.entrySet().parallelStream());
+	}
+
+	private static <K, V> Stream<Tuple2<K, V>> mapper(Stream<Map.Entry<K, V>> stream) {
+		return stream
+			.map(entry -> Tuple2.of(entry.getKey(), entry.getValue()));
+	}
+
 	public static <A> A head(List<A> list){
 		try {
 			return list.get(0);

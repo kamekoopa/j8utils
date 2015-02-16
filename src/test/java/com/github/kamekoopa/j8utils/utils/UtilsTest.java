@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import static com.github.kamekoopa.j8utils.utils.Utils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
@@ -285,6 +286,29 @@ public class UtilsTest {
 			Option<Integer> option = get(map, "key2");
 			assertTrue(option.isSome());
 			assertThat(option.getOrElse(() -> -1), is(2));
+		}
+
+		@Test
+		public void keyValueのstreamを取得できる() throws Exception {
+
+			List<String> result = keyValueStream(map)
+				.map(keyValue -> keyValue._1 + "-" + keyValue._2)
+				.collect(Collectors.toList());
+
+			assertThat(result, is(
+				Arrays.asList("key1-1", "key2-2", "key3-3")
+			));
+		}
+
+
+		@Test
+		public void keyValueの並列streamを取得できる() throws Exception {
+
+			List<String> result = keyValuePStream(map)
+				.map(keyValue -> keyValue._1+"-"+keyValue._2)
+				.collect(Collectors.toList());
+
+			assertThat(result, hasItems("key1-1", "key2-2", "key3-3"));
 		}
 	}
 }
