@@ -68,7 +68,7 @@ public class FutureBuilder {
 			);
 		}
 
-		public <B> B get(Function<A, B> success, Function<Throwable, B> failure){
+		public Try<A> tryGet() {
 
 			return Try.of(() -> {
 				try {
@@ -78,19 +78,19 @@ public class FutureBuilder {
 				} catch (Throwable e) {
 					throw e;
 				}
-			}).fold(success, failure);
+			});
 		}
+		public Try<A> tryGet(long time, TimeUnit unit){
 
-		public <B> B get(Function<A, B> success, Function<Throwable, B> failure, long time, TimeUnit unit){
 			return Try.of(() -> {
 				try {
-					return this.underlying.get(time, unit);
+					return Future.this.underlying.get(time, unit);
 				} catch (ExecutionException e) {
 					throw e.getCause();
 				} catch (Throwable e) {
 					throw e;
 				}
-			}).fold(success, failure);
+			});
 		}
 
 

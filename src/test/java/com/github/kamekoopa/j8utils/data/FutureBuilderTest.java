@@ -46,7 +46,7 @@ public class FutureBuilderTest {
 		public void 非同期処理ができる() throws Exception {
 
 			String result = builder.run(() -> "future")
-				.get(Function.identity(), s -> "error");
+				.tryGet().fold(Function.identity(), s -> "error");
 
 			assertThat(result, is("future"));
 		}
@@ -56,7 +56,7 @@ public class FutureBuilderTest {
 
 			Integer result = builder.run(() -> "future")
 				.map(String::length)
-				.get(Function.identity(), s -> -1);
+				.tryGet().fold(Function.identity(), s -> -1);
 
 			assertThat(result, is(6));
 		}
@@ -66,7 +66,7 @@ public class FutureBuilderTest {
 
 			Integer result = builder.run(() -> "future")
 				.flatMap(s -> FutureBuilder.build().run(s::length))
-				.get(Function.identity(), s -> -1);
+				.tryGet().fold(Function.identity(), s -> -1);
 
 			assertThat(result, is(6));
 		}
@@ -78,7 +78,7 @@ public class FutureBuilderTest {
 				.<String>map(s -> {
 					throw new RuntimeException("error");
 				})
-				.get(s -> s, Throwable::getMessage);
+				.tryGet().fold(s -> s, Throwable::getMessage);
 
 			assertThat(result, is("error"));
 		}
@@ -95,7 +95,7 @@ public class FutureBuilderTest {
 						throw new RuntimeException(e);
 					}
 				})
-				.get(s -> getClass().getName(), e -> e.getClass().getName(), 1L, TimeUnit.SECONDS);
+				.tryGet(1L, TimeUnit.SECONDS).fold(s -> getClass().getName(), e -> e.getClass().getName());
 
 			assertThat(result, is("java.util.concurrent.TimeoutException"));
 		}
@@ -116,7 +116,7 @@ public class FutureBuilderTest {
 		public void 非同期処理ができる() throws Exception {
 
 			String result = builder.run(() -> "future")
-				.get(Function.identity(), s -> "error");
+				.tryGet().fold(Function.identity(), s -> "error");
 
 			assertThat(result, is("future"));
 		}
@@ -126,7 +126,7 @@ public class FutureBuilderTest {
 
 			Integer result = builder.run(() -> "future")
 				.map(String::length)
-				.get(Function.identity(), s -> -1);
+				.tryGet().fold(Function.identity(), s -> -1);
 
 			assertThat(result, is(6));
 		}
@@ -136,7 +136,7 @@ public class FutureBuilderTest {
 
 			Integer result = builder.run(() -> "future")
 				.flatMap(s -> FutureBuilder.build().run(s::length))
-				.get(Function.identity(), s -> -1);
+				.tryGet().fold(Function.identity(), s -> -1);
 
 			assertThat(result, is(6));
 		}
@@ -148,7 +148,7 @@ public class FutureBuilderTest {
 				.<String>map(s -> {
 					throw new RuntimeException("error");
 				})
-				.get(s -> s, Throwable::getMessage);
+				.tryGet().fold(s -> s, Throwable::getMessage);
 
 			assertThat(result, is("error"));
 		}
@@ -165,7 +165,7 @@ public class FutureBuilderTest {
 						throw new RuntimeException(e);
 					}
 				})
-				.get(s -> getClass().getName(), e -> e.getClass().getName(), 1L, TimeUnit.SECONDS);
+				.tryGet(1L, TimeUnit.SECONDS).fold(s -> getClass().getName(), e -> e.getClass().getName());
 
 			assertThat(result, is("java.util.concurrent.TimeoutException"));
 		}
