@@ -113,6 +113,16 @@ public class OptionTest {
 
 			assertThat(option, is(not(Option.none())));
 		}
+
+		@Test
+		public void 要素1個のstreamにできる() throws Exception {
+
+			String[] str = {""};
+
+			option.stream().forEach(s -> str[0] = s);
+
+			assertThat(str[0], is("optional"));
+		}
 	}
 
 
@@ -202,6 +212,16 @@ public class OptionTest {
 
 			Option<String> test = Option.of("test");
 			assertThat(option, is(not(test)));
+		}
+
+		@Test
+		public void 要素0個のstreamにできる() throws Exception {
+
+			String[] str = {"none"};
+
+			option.stream().forEach(s -> str[0] = s);
+
+			assertThat(str[0], is("none"));
 		}
 	}
 }

@@ -23,6 +23,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public abstract class Option<A> implements Iterable<A> {
 
@@ -64,6 +66,10 @@ public abstract class Option<A> implements Iterable<A> {
 	public abstract <B> B fold(Supplier<B> none, Function<A, B> f);
 
 	public abstract A getOrElse(Supplier<A> def);
+
+	public Stream<A> stream() {
+		return StreamSupport.stream(this.spliterator(), false);
+	}
 
 
 	public static final class Some<A> extends Option<A> {
