@@ -128,6 +128,12 @@ public class Utils {
 		return StreamSupport.stream(() -> zipped, zipped.characteristics(), false);
 	}
 
+	public static <T> List<T> filterSome(List<Option<T>> optionList){
+		return optionList.stream().filter(Option::isSome)
+			.map(option -> option.getOrElse(() -> null))
+			.collect(Collectors.toList());
+	}
+
 	private static class Zipped<A, B, C> implements Spliterator<C> {
 
 		private final Spliterator<A> a;

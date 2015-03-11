@@ -249,6 +249,34 @@ public class UtilsTest {
 
 
 	@RunWith(JUnit4.class)
+	public static class リストがNoneとSomeが混在するOptionの要素を持つ時 {
+
+		List<Option<String>> list;
+
+		@Before
+		public void setUp() throws Exception {
+
+			this.list = new ArrayList<Option<String>>(){{
+				add(Option.of("a"));
+				add(Option.none());
+				add(Option.of("c"));
+				add(Option.of("d"));
+			}};
+		}
+
+		@Test
+		public void filterSomeで要素がSomeのもののみOptionが剥がされたリストになる() throws Exception {
+
+			List<String> actual = filterSome(this.list);
+
+			assertThat(actual.get(0), is("a"));
+			assertThat(actual.get(1), is("c"));
+			assertThat(actual.get(2), is("d"));
+		}
+	}
+
+
+	@RunWith(JUnit4.class)
 	public static class マップに要素が存在しない時 {
 
 		Map<String, Integer> map;
