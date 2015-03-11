@@ -137,7 +137,7 @@ public class Utils {
 	}
 
 	public static <T> Stream<T> filterSomeToStream(Stream<Option<T>> optionStream){
-		return optionStream.filter(Option::isSome)
+		return optionStream
 			.flatMap(Option::stream);
 	}
 
