@@ -283,6 +283,16 @@ public class UtilsTest {
 			assertThat(actual.get(1), is("c"));
 			assertThat(actual.get(2), is("d"));
 		}
+
+		@Test
+		public void filterSomeで要素がSomeのもののみOptionが剥がされたリストになる_戻り値もStream版() throws Exception {
+
+			List<String> actual = filterSomeToStream(this.list.stream()).collect(Collectors.toList());
+
+			assertThat(actual.get(0), is("a"));
+			assertThat(actual.get(1), is("c"));
+			assertThat(actual.get(2), is("d"));
+		}
 	}
 
 

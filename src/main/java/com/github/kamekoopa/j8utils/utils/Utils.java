@@ -138,6 +138,11 @@ public class Utils {
 			.collect(Collectors.toList());
 	}
 
+	public static <T> Stream<T> filterSomeToStream(Stream<Option<T>> optionStream){
+		return optionStream.filter(Option::isSome)
+			.flatMap(Option::stream);
+	}
+
 	private static class Zipped<A, B, C> implements Spliterator<C> {
 
 		private final Spliterator<A> a;
