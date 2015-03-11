@@ -133,9 +133,7 @@ public class Utils {
 	}
 
 	public static <T> List<T> filterSome(Stream<Option<T>> optionStream){
-		return optionStream.filter(Option::isSome)
-			.map(option -> option.getOrElse(() -> null))
-			.collect(Collectors.toList());
+		return filterSomeToStream(optionStream).collect(Collectors.toList());
 	}
 
 	public static <T> Stream<T> filterSomeToStream(Stream<Option<T>> optionStream){
