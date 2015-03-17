@@ -123,6 +123,31 @@ public class OptionTest {
 
 			assertThat(str[0], is("optional"));
 		}
+
+		@Test
+		public void apで複数のsomeに関数を適用できる() throws Exception {
+
+			Option<String> ob = Option.of("1");
+			Option<String> oc = Option.of("2");
+			Option<String> od = Option.of("3");
+
+			Option<String> actual = option.ap(ob, oc, od, (a, b, c, d) -> a + b + c + d);
+
+			assertThat(actual.getOrElse(() -> "error"), is("optional123"));
+		}
+
+		@Test
+		public void apで渡すoptionの中にnoneがあると全体としてnoneになる() throws Exception {
+
+			Option<String> ob = Option.of("1");
+			Option<String> oc = Option.none();
+			Option<String> od = Option.of("3");
+			Option<String> oe = Option.of("4");
+
+			Option<String> actual = option.ap(ob, oc, od, oe, (a, b, c, d, e) -> a + b + c + d + e);
+
+			assertTrue(actual.isNone());
+		}
 	}
 
 
@@ -222,6 +247,26 @@ public class OptionTest {
 			option.stream().forEach(s -> str[0] = s);
 
 			assertThat(str[0], is("none"));
+		}
+
+		@Test
+		public void apで複数のsomeに関数適用をしても全体としてnone() throws Exception {
+
+			Option<String> ob = Option.of("1");
+			Option<String> oc = Option.of("2");
+
+			Option<String> actual = option.ap(ob, oc, (a, b, c) -> a + b + c);
+			assertTrue(actual.isNone());
+		}
+
+		@Test
+		public void apで渡すoptionがnoneならnone() throws Exception {
+
+			Option<String> ob = Option.none();
+
+			Option<String> actual = option.ap(ob, (a, b) -> a + b);
+
+			assertTrue(actual.isNone());
 		}
 	}
 }

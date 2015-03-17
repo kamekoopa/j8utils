@@ -16,11 +16,15 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.utils.F3;
+import com.github.kamekoopa.j8utils.utils.F4;
+import com.github.kamekoopa.j8utils.utils.F5;
 import com.github.kamekoopa.j8utils.utils.FE1;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -69,6 +73,22 @@ public abstract class Option<A> implements Iterable<A> {
 
 	public Stream<A> stream() {
 		return StreamSupport.stream(this.spliterator(), false);
+	}
+
+	public <B, X> Option<X> ap(Option<B> ob, BiFunction<A, B, X> f) {
+		return this.flatMap(a -> ob.map(b -> f.apply(a, b)));
+	}
+
+	public <B, C, X> Option<X> ap(Option<B> ob, Option<C> oc, F3<A, B, C, X> f) {
+		return this.flatMap(a -> ob.flatMap(b -> oc.map(c -> f.apply(a, b, c))));
+	}
+
+	public <B, C, D, X> Option<X> ap(Option<B> ob, Option<C> oc, Option<D> od, F4<A, B, C, D, X> f) {
+		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.map(d -> f.apply(a, b, c, d)))));
+	}
+
+	public <B, C, D, E, X> Option<X> ap(Option<B> ob, Option<C> oc, Option<D> od, Option<E> oe, F5<A, B, C, D, E, X> f) {
+		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.flatMap(d -> oe.map( e->f.apply(a, b, c, d, e))))));
 	}
 
 
