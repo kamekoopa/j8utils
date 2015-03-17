@@ -16,6 +16,10 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.utils.F3;
+import com.github.kamekoopa.j8utils.utils.F4;
+import com.github.kamekoopa.j8utils.utils.F5;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -91,6 +95,22 @@ public class FutureBuilder {
 					throw e;
 				}
 			});
+		}
+
+		public <B, X> Future<X> ap(Future<B> fb, BiFunction<A, B, X> f) {
+			return this.flatMap(a -> fb.map(b -> f.apply(a, b)));
+		}
+
+		public <B, C, X> Future<X> ap(Future<B> fb, Future<C> fc, F3<A, B, C, X> f) {
+			return this.flatMap(a -> fb.flatMap(b -> fc.map(c -> f.apply(a, b, c))));
+		}
+
+		public <B, C, D, X> Future<X> ap(Future<B> fb, Future<C> fc, Future<D> fd, F4<A, B, C, D, X> f) {
+			return this.flatMap(a -> fb.flatMap(b -> fc.flatMap(c -> fd.map(d -> f.apply(a, b, c, d)))));
+		}
+
+		public <B, C, D, E, X> Future<X> ap(Future<B> fb, Future<C> fc, Future<D> fd, Future<E> fe, F5<A, B, C, D, E, X> f) {
+			return this.flatMap(a -> fb.flatMap(b -> fc.flatMap(c -> fd.flatMap(d -> fe.map( e->f.apply(a, b, c, d, e))))));
 		}
 
 

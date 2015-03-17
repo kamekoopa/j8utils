@@ -16,6 +16,7 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.data.FutureBuilder.Future;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -32,6 +33,10 @@ import static org.hamcrest.Matchers.is;
 @RunWith(Enclosed.class)
 public class FutureBuilderTest {
 
+	public static void sleep(long milli){
+		try {Thread.sleep(milli);} catch (InterruptedException e) {throw new RuntimeException(e);}
+	}
+
 	@RunWith(JUnit4.class)
 	public static class ExecutorServiceで実行する場合 {
 
@@ -39,7 +44,7 @@ public class FutureBuilderTest {
 
 		@Before
 		public void setup() throws Exception {
-			this.builder = FutureBuilder.buildWith(Executors.newFixedThreadPool(1));
+			this.builder = FutureBuilder.buildWith(Executors.newFixedThreadPool(3));
 		}
 
 		@Test
@@ -88,16 +93,52 @@ public class FutureBuilderTest {
 
 			String result = builder.run(() -> "future")
 				.map(s -> {
-					try {
-						Thread.sleep(5 * 1000L);
-						return s;
-					} catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+					sleep(5 * 1000L);
+					return s;
 				})
 				.tryGet(1L, TimeUnit.SECONDS).fold(s -> getClass().getName(), e -> e.getClass().getName());
 
 			assertThat(result, is("java.util.concurrent.TimeoutException"));
+		}
+
+		@Test
+		public void apで複数Futureの合成ができる() throws Exception {
+
+			Future<String> fa = builder.run(() -> {
+				sleep(1000L);
+				return "a";
+			});
+			Future<String> fb = builder.run(() -> {
+				return "b";
+			});
+			Future<String> fc = builder.run(() -> {
+				sleep(500L);
+				return "c";
+			});
+
+			Future<String> actual = fa.ap(fb, fc, (a, b, c) -> a + b + c);
+
+			assertThat(actual.tryGet().fallback(Throwable::getMessage), is("abc"));
+		}
+
+		@Test
+		public void apで一部のFutureがエラー終了した場合getでFailureになる() throws Exception {
+
+			Future<String> fa = builder.run(() -> {
+				sleep(1000L);
+				return "a";
+			});
+			Future<String> fb = builder.run(() -> {
+				throw new RuntimeException("error");
+			});
+			Future<String> fc = builder.run(() -> {
+				sleep(500L);
+				return "c";
+			});
+
+			Future<String> actual = fa.ap(fb, fc, (a, b, c) -> a + b + c);
+
+			assertThat(actual.tryGet().fallback(Throwable::getMessage), is("error"));
 		}
 	}
 
@@ -158,16 +199,52 @@ public class FutureBuilderTest {
 
 			String result = builder.run(() -> "future")
 				.map(s -> {
-					try {
-						Thread.sleep(5 * 1000L);
-						return s;
-					} catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+					sleep(5 * 1000L);
+					return s;
 				})
 				.tryGet(1L, TimeUnit.SECONDS).fold(s -> getClass().getName(), e -> e.getClass().getName());
 
 			assertThat(result, is("java.util.concurrent.TimeoutException"));
+		}
+
+		@Test
+		public void apで複数Futureの合成ができる() throws Exception {
+
+			Future<String> fa = builder.run(() -> {
+				sleep(1000L);
+				return "a";
+			});
+			Future<String> fb = builder.run(() -> {
+				return "b";
+			});
+			Future<String> fc = builder.run(() -> {
+				sleep(500L);
+				return "c";
+			});
+
+			Future<String> actual = fa.ap(fb, fc, (a, b, c) -> a + b + c);
+
+			assertThat(actual.tryGet().fallback(Throwable::getMessage), is("abc"));
+		}
+
+		@Test
+		public void apで一部のFutureがエラー終了した場合getでFailureになる() throws Exception {
+
+			Future<String> fa = builder.run(() -> {
+				sleep(1000L);
+				return "a";
+			});
+			Future<String> fb = builder.run(() -> {
+				throw new RuntimeException("error");
+			});
+			Future<String> fc = builder.run(() -> {
+				sleep(500L);
+				return "c";
+			});
+
+			Future<String> actual = fa.ap(fb, fc, (a, b, c) -> a + b + c);
+
+			assertThat(actual.tryGet().fallback(Throwable::getMessage), is("error"));
 		}
 	}
 }
