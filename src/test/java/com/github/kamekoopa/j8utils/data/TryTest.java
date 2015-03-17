@@ -115,6 +115,31 @@ public class TryTest {
 			String result = test.fallback(e -> "failure");
 			assertThat(result, is("success"));
 		}
+
+		@Test
+		public void apで複数のsuccessに関数を適用できる() throws Exception {
+
+			Try<String> tb = Try.of(() -> "1");
+			Try<String> tc = Try.of(() -> "2");
+			Try<String> td = Try.of(() -> "3");
+
+			Try<String> actual = test.ap(tb, tc, td, (a, b, c, d) -> a + b + c + d);
+
+			assertThat(actual.fallback(e -> "error"), is("success123"));
+		}
+
+		@Test
+		public void apで渡すtryの中にfailureがあると全体としてfailureになる() throws Exception {
+
+			Try<String> tb = Try.of(() -> "1");
+			Try<String> tc = Try.failure(new Exception("error"));
+			Try<String> td = Try.of(() -> "3");
+			Try<String> te = Try.of(() -> "4");
+
+			Try<String> actual = test.ap(tb, tc, td, te, (a, b, c, d, e) -> a + b + c + d + e);
+
+			assertTrue(actual.isFailure());
+		}
 	}
 
 	@RunWith(JUnit4.class)
@@ -190,6 +215,26 @@ public class TryTest {
 			String result = test.fallback(Throwable::getMessage);
 
 			assertThat(result, is("failure"));
+		}
+
+		@Test
+		public void apで複数のsomeに関数適用をしても全体としてnone() throws Exception {
+
+			Try<String> tb = Try.of(() -> "1");
+			Try<String> tc = Try.of(() -> "2");
+
+			Try<String> actual = test.ap(tb, tc, (a, b, c) -> a + b + c);
+			assertTrue(actual.isFailure());
+		}
+
+		@Test
+		public void apで渡すoptionがnoneならnone() throws Exception {
+
+			Try<String> tb = Try.failure(new Exception("error"));
+
+			Try<String> actual = test.ap(tb, (a, b) -> a + b);
+
+			assertTrue(actual.isFailure());
 		}
 	}
 }

@@ -16,9 +16,9 @@
 
 package com.github.kamekoopa.j8utils.data;
 
-import com.github.kamekoopa.j8utils.utils.FE1;
-import com.github.kamekoopa.j8utils.utils.SE;
+import com.github.kamekoopa.j8utils.utils.*;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public abstract class Try<A> {
@@ -59,6 +59,21 @@ public abstract class Try<A> {
 
 	public abstract boolean isFailure();
 
+	public <B, X> Try<X> ap(Try<B> ob, BiFunction<A, B, X> f) {
+		return this.flatMap(a -> ob.map(b -> f.apply(a, b)));
+	}
+
+	public <B, C, X> Try<X> ap(Try<B> ob, Try<C> oc, F3<A, B, C, X> f) {
+		return this.flatMap(a -> ob.flatMap(b -> oc.map(c -> f.apply(a, b, c))));
+	}
+
+	public <B, C, D, X> Try<X> ap(Try<B> ob, Try<C> oc, Try<D> od, F4<A, B, C, D, X> f) {
+		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.map(d -> f.apply(a, b, c, d)))));
+	}
+
+	public <B, C, D, E, X> Try<X> ap(Try<B> ob, Try<C> oc, Try<D> od, Try<E> oe, F5<A, B, C, D, E, X> f) {
+		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.flatMap(d -> oe.map( e->f.apply(a, b, c, d, e))))));
+	}
 
 
 	public static final class Success<A> extends Try<A> {
