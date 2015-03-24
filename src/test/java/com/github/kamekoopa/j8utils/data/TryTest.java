@@ -112,7 +112,7 @@ public class TryTest {
 		@Test
 		public void fallbackに指定した値は無視されて中身が取得できる() throws Exception {
 
-			String result = test.fallback(e -> "failure");
+			String result = test.recover(e -> "failure");
 			assertThat(result, is("success"));
 		}
 
@@ -125,7 +125,7 @@ public class TryTest {
 
 			Try<String> actual = test.ap(tb, tc, td, (a, b, c, d) -> a + b + c + d);
 
-			assertThat(actual.fallback(e -> "error"), is("success123"));
+			assertThat(actual.recover(e -> "error"), is("success123"));
 		}
 
 		@Test
@@ -212,7 +212,7 @@ public class TryTest {
 		@Test
 		public void fallbackで失敗状態から値を取得できる() throws Exception {
 
-			String result = test.fallback(Throwable::getMessage);
+			String result = test.recover(Throwable::getMessage);
 
 			assertThat(result, is("failure"));
 		}

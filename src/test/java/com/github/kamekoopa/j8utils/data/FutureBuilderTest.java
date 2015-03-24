@@ -118,7 +118,7 @@ public class FutureBuilderTest {
 
 			Future<String> actual = fa.ap(fb, fc, (a, b, c) -> a + b + c);
 
-			assertThat(actual.tryGet().fallback(Throwable::getMessage), is("abc"));
+			assertThat(actual.tryGet().recover(Throwable::getMessage), is("abc"));
 		}
 
 		@Test
@@ -138,7 +138,7 @@ public class FutureBuilderTest {
 
 			Future<String> actual = fa.ap(fb, fc, (a, b, c) -> a + b + c);
 
-			assertThat(actual.tryGet().fallback(Throwable::getMessage), is("error"));
+			assertThat(actual.tryGet().recover(Throwable::getMessage), is("error"));
 		}
 	}
 
@@ -224,7 +224,7 @@ public class FutureBuilderTest {
 
 			Future<String> actual = fa.ap(fb, fc, (a, b, c) -> a + b + c);
 
-			assertThat(actual.tryGet().fallback(Throwable::getMessage), is("abc"));
+			assertThat(actual.tryGet().recover(Throwable::getMessage), is("abc"));
 		}
 
 		@Test
@@ -244,7 +244,7 @@ public class FutureBuilderTest {
 
 			Future<String> actual = fa.ap(fb, fc, (a, b, c) -> a + b + c);
 
-			assertThat(actual.tryGet().fallback(Throwable::getMessage), is("error"));
+			assertThat(actual.tryGet().recover(Throwable::getMessage), is("error"));
 		}
 	}
 }

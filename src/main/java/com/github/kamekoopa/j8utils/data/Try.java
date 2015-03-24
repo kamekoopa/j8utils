@@ -53,7 +53,7 @@ public abstract class Try<A> {
 
 	public abstract <B> B fold(Function<A, B> success, Function<Throwable, B> failure);
 
-	public abstract A fallback(Function<Throwable, A> f);
+	public abstract A recover(Function<Throwable, A> f);
 
 	public abstract boolean isSuccess();
 
@@ -120,7 +120,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public A fallback(Function<Throwable, A> f) {
+		public A recover(Function<Throwable, A> f) {
 			return a;
 		}
 
@@ -180,7 +180,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public A fallback(Function<Throwable, A> f) {
+		public A recover(Function<Throwable, A> f) {
 			return f.apply(e);
 		}
 
