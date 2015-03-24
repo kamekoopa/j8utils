@@ -28,6 +28,14 @@ public class Utils {
 
 	private Utils(){}
 
+	public static <A> Stream<A> stream(Iterable<A> iterable) {
+		return StreamSupport.stream(iterable.spliterator(), false);
+	}
+
+	public static <A> Stream<A> pstream(Iterable<A> iterable) {
+		return StreamSupport.stream(iterable.spliterator(), true);
+	}
+
 	public static <A> Option<A> get(List<A> list, int i){
 		return Try.of(() -> list.get(i)).toOption();
 	}

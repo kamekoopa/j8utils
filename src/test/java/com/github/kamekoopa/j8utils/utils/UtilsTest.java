@@ -31,9 +31,7 @@ import java.util.stream.Stream;
 
 import static com.github.kamekoopa.j8utils.utils.Utils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
 
 
@@ -357,6 +355,41 @@ public class UtilsTest {
 				.collect(Collectors.toList());
 
 			assertThat(result, hasItems("key1-1", "key2-2", "key3-3"));
+		}
+	}
+
+	@RunWith(JUnit4.class)
+	public static class 何らかのIterable {
+
+		Iterable<String> it;
+
+		@Before
+		public void setUp() throws Exception {
+			this.it = new HashSet<String>(){{
+				add("a");
+				add("b");
+			}};
+		}
+
+		@Test
+		public void streamに変換できる() throws Exception {
+
+			Stream<String> stream = stream(it);
+
+			List<String> actual = stream.collect(Collectors.toList());
+			assertThat(actual, hasItem("a"));
+			assertThat(actual, hasItem("b"));
+		}
+
+		@Test
+		public void parallelStreamに変換できる() throws Exception {
+
+			Stream<String> stream = pstream(it);
+
+			assertTrue(stream.isParallel());
+			List<String> actual = stream.collect(Collectors.toList());
+			assertThat(actual, hasItem("a"));
+			assertThat(actual, hasItem("b"));
 		}
 	}
 }
