@@ -16,6 +16,10 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.utils.FE1;
+
+import java.util.function.Function;
+
 public final class Tuple2<A, B> {
 
 	public final A _1;
@@ -28,6 +32,22 @@ public final class Tuple2<A, B> {
 
 	public static <A, B> Tuple2<A, B> of(A _1, B _2){
 		return new Tuple2<>(_1, _2);
+	}
+
+	public <AA> Tuple2<AA, B> mod1(Function<A, AA> f) {
+		return Tuple2.of(f.apply(_1), _2);
+	}
+
+	public <AA> Tuple2<AA, B> mod1(FE1<A, AA> f) throws Exception {
+		return Tuple2.of(f.applye(_1), _2);
+	}
+
+	public <BB> Tuple2<A, BB> mod2(Function<B, BB> f) {
+		return Tuple2.of(_1, f.apply(_2));
+	}
+
+	public <BB> Tuple2<A, BB> mod2(FE1<B, BB> f) throws Exception {
+		return Tuple2.of(_1, f.applye(_2));
 	}
 
 	@Override
