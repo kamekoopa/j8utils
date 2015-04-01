@@ -73,7 +73,7 @@ public abstract class Option<A> implements Iterable<A> {
 
 	public abstract Option<A> ifEmpty(Supplier<A> ifEmpty);
 
-	public abstract Option<A> or(Option<A> option);
+	public abstract Option<A> or(Supplier<Option<A>> optionSupplier);
 
 	public Stream<A> stream() {
 		return StreamSupport.stream(this.spliterator(), false);
@@ -150,7 +150,7 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public Option<A> or(Option<A> option) {
+		public Option<A> or(Supplier<Option<A>> optionSupplier) {
 			return this;
 		}
 
@@ -245,8 +245,8 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public Option<A> or(Option<A> option) {
-			return option;
+		public Option<A> or(Supplier<Option<A>> optionSupplier) {
+			return optionSupplier.get();
 		}
 
 		@Override

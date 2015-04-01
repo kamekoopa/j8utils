@@ -162,7 +162,7 @@ public class OptionTest {
 		@Test
 		public void orで自分自身が取得できる() throws Throwable {
 
-			Option<String> actual = option.or(Option.of("ifEmpty"));
+			Option<String> actual = option.or(() -> Option.of("ifEmpty"));
 			assertThat(actual, is(option));
 		}
 	}
@@ -305,14 +305,14 @@ public class OptionTest {
 		@Test
 		public void orにSomeを指定すると指定したoptionが取得できる() throws Throwable {
 
-			Option<String> actual = option.or(Option.of("ifEmpty"));
+			Option<String> actual = option.or(() -> Option.of("ifEmpty"));
 			assertThat(actual, is(Option.of("ifEmpty")));
 		}
 
 		@Test
 		public void orにnoneを指定するとnoneが取得できる() throws Throwable {
 
-			Option<String> actual = option.or(Option.none());
+			Option<String> actual = option.or(() -> Option.none());
 			assertThat(actual, is(Option.none()));
 		}
 	}
