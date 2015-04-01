@@ -69,17 +69,17 @@ public class LazyValTest {
 	}
 
 	@Test(expected = Exception.class)
-	public void 値を遅延提供するsupplierが例外を投げる時gete時に例外をスローする() throws Throwable {
+	public void 値を遅延提供するsupplierが例外を投げる時gete時に例外をスローする() throws Exception {
 		LazyVal.of(() -> { throw new Exception(); }).gete();
 	}
 
 	@Test(expected = Error.class)
-	public void 値を遅延提供するsupplierがエラーを投げる時get時にエラーがそのままスローされる() throws Throwable {
+	public void 値を遅延提供するsupplierがエラーを投げる時get時にエラーがそのままスローされる() throws Exception {
 		LazyVal.of(() -> { throw new Error(); }).get();
 	}
 
 	@Test(expected = RE.class)
-	public void 値を遅延提供するsupplierが実行時例外を投げる時その実行時例外がそのままスローされる() throws Throwable {
+	public void 値を遅延提供するsupplierが実行時例外を投げる時その実行時例外がそのままスローされる() throws Exception {
 		LazyVal.of(() -> { throw new RE(); }).get();
 	}
 }

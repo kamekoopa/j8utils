@@ -64,7 +64,7 @@ public class TryTest {
 		}
 
 		@Test(expected = Exception.class)
-		public void mapeは例外を透過する() throws Throwable {
+		public void mapeは例外を透過する() throws Exception {
 			test.mape(s -> {
 				throw new Exception();
 			});
@@ -172,7 +172,7 @@ public class TryTest {
 		}
 
 		@Test
-		public void mapeは実行されないので関数内で例外を投げても何も起きない() throws Throwable {
+		public void mapeは実行されないので関数内で例外を投げても何も起きない() throws Exception {
 
 			test.mape(s -> {
 				throw new Exception();
@@ -184,7 +184,7 @@ public class TryTest {
 
 			String result = test.<String>failableMap(s -> {
 				throw new Exception();
-			}).fold(Function.identity(), Throwable::getMessage);
+			}).fold(Function.identity(), Exception::getMessage);
 
 			assertThat(result, is("failure"));
 		}
@@ -212,7 +212,7 @@ public class TryTest {
 		@Test
 		public void fallbackで失敗状態から値を取得できる() throws Exception {
 
-			String result = test.recover(Throwable::getMessage);
+			String result = test.recover(Exception::getMessage);
 
 			assertThat(result, is("failure"));
 		}

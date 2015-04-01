@@ -38,7 +38,7 @@ public final class Tuple2<A, B> {
 		return Tuple2.of(f.apply(_1), _2);
 	}
 
-	public <AA> Tuple2<AA, B> mod1e(FE1<A, AA> f) throws Throwable {
+	public <AA> Tuple2<AA, B> mod1e(FE1<A, AA> f) throws Exception {
 		return Tuple2.of(f.apply(_1), _2);
 	}
 
@@ -46,7 +46,7 @@ public final class Tuple2<A, B> {
 		return Tuple2.of(_1, f.apply(_2));
 	}
 
-	public <BB> Tuple2<A, BB> mod2e(FE1<B, BB> f) throws Throwable {
+	public <BB> Tuple2<A, BB> mod2e(FE1<B, BB> f) throws Exception {
 		return Tuple2.of(_1, f.apply(_2));
 	}
 

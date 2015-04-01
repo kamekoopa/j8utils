@@ -54,7 +54,7 @@ public class Tuple2Test {
 	}
 
 	@Test(expected = Exception.class)
-	public void 例外投げられる版mod1内で起きた例外は透過する() throws Throwable {
+	public void 例外投げられる版mod1内で起きた例外は透過する() throws Exception {
 
 		Tuple2<String, Integer> t1 = Tuple2.of("one", 1);
 
@@ -72,7 +72,7 @@ public class Tuple2Test {
 	}
 
 	@Test(expected = Exception.class)
-	public void 例外投げられる版mod2内で起きた例外は透過する() throws Throwable {
+	public void 例外投げられる版mod2内で起きた例外は透過する() throws Exception {
 
 		Tuple2<String, String> t1 = Tuple2.of("one", "a");
 		t1.<Integer>mod2e(Integer::valueOf);

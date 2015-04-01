@@ -64,14 +64,14 @@ public class OptionTest {
 		}
 
 		@Test
-		public void mapeで値を写せる() throws Throwable {
+		public void mapeで値を写せる() throws Exception {
 
 			Integer i = option.mape(String::length).getOrElse(() -> -1);
 			assertThat(i, is(8));
 		}
 
 		@Test(expected = Exception.class)
-		public void mapeでは例外を透過する() throws Throwable {
+		public void mapeでは例外を透過する() throws Exception {
 			option.<Integer>mape(s -> {throw new Exception();}).getOrElse(() -> -1);
 		}
 
@@ -90,7 +90,7 @@ public class OptionTest {
 		}
 
 		@Test(expected = Exception.class)
-		public void flatMap例外透過版は例外を透過する() throws Throwable {
+		public void flatMap例外透過版は例外を透過する() throws Exception {
 			option.flatMape(s -> {
 				throw new Exception("");
 			});
@@ -152,7 +152,7 @@ public class OptionTest {
 		}
 
 		@Test
-		public void ifEmptyで自分自身が取得できる() throws Throwable {
+		public void ifEmptyで自分自身が取得できる() throws Exception {
 
 			Option<String> actual = option.ifEmpty(() -> "ifEmpty");
 
@@ -160,7 +160,7 @@ public class OptionTest {
 		}
 
 		@Test
-		public void orで自分自身が取得できる() throws Throwable {
+		public void orで自分自身が取得できる() throws Exception {
 
 			Option<String> actual = option.or(() -> Option.of("ifEmpty"));
 			assertThat(actual, is(option));
@@ -208,26 +208,26 @@ public class OptionTest {
 		}
 
 		@Test
-		public void mapeしてもnoneのまま() throws Throwable {
+		public void mapeしてもnoneのまま() throws Exception {
 
 			assertTrue(option.mape(String::length).isNone());
 		}
 
 		@Test
-		public void mapeで例外を投げても実行されないのでスローされない() throws Throwable {
+		public void mapeで例外を投げても実行されないのでスローされない() throws Exception {
 			assertTrue(option.<Integer>mape(s -> {
 				throw new Exception();
 			}).isNone());
 		}
 
 		@Test
-		public void flatMapでも関数は実行されないのでsomeには出来ない() throws Throwable {
+		public void flatMapでも関数は実行されないのでsomeには出来ない() throws Exception {
 
 			assertTrue(option.flatMap(s -> Option.of(s.length())).isNone());
 		}
 
 		@Test
-		public void flatMap例外透過版で例外を投げても実行されないのでスローされない() throws Throwable {
+		public void flatMap例外透過版で例外を投げても実行されないのでスローされない() throws Exception {
 			assertTrue(
 				option.flatMape(s -> {
 					throw new Exception("");
@@ -287,7 +287,7 @@ public class OptionTest {
 		}
 
 		@Test
-		public void ifEmptyにSomeを指定すると引数の方の値が取得できる() throws Throwable {
+		public void ifEmptyにSomeを指定すると引数の方の値が取得できる() throws Exception {
 
 			Option<String> actual = option.ifEmpty(() -> "ifEmpty");
 
@@ -295,7 +295,7 @@ public class OptionTest {
 		}
 
 		@Test
-		public void ifEmptyにnullを指定するとNoneが取得できる() throws Throwable {
+		public void ifEmptyにnullを指定するとNoneが取得できる() throws Exception {
 
 			Option<String> actual = option.ifEmpty(() -> null);
 
@@ -303,16 +303,16 @@ public class OptionTest {
 		}
 
 		@Test
-		public void orにSomeを指定すると指定したoptionが取得できる() throws Throwable {
+		public void orにSomeを指定すると指定したoptionが取得できる() throws Exception {
 
 			Option<String> actual = option.or(() -> Option.of("ifEmpty"));
 			assertThat(actual, is(Option.of("ifEmpty")));
 		}
 
 		@Test
-		public void orにnoneを指定するとnoneが取得できる() throws Throwable {
+		public void orにnoneを指定するとnoneが取得できる() throws Exception {
 
-			Option<String> actual = option.or(() -> Option.none());
+			Option<String> actual = option.or(Option::none);
 			assertThat(actual, is(Option.none()));
 		}
 	}

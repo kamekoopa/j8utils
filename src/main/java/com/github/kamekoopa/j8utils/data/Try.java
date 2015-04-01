@@ -35,13 +35,13 @@ public abstract class Try<A> {
 		return new Success<>(a);
 	}
 
-	public static <A> Failure<A> failure(Throwable e){
+	public static <A> Failure<A> failure(Exception e){
 		return new Failure<>(e);
 	}
 
 	public abstract <B> Try<B> map(Function<A, B> f);
 
-	public abstract <B> Try<B> mape(FE1<A, B> f) throws Throwable;
+	public abstract <B> Try<B> mape(FE1<A, B> f) throws Exception;
 
 	public abstract <B> Try<B> failableMap(FE1<A, B> f);
 
@@ -49,11 +49,11 @@ public abstract class Try<A> {
 
 	public abstract Option<A> toOption();
 
-	public abstract Either<Throwable, A> toEither();
+	public abstract Either<Exception, A> toEither();
 
-	public abstract <B> B fold(Function<A, B> success, Function<Throwable, B> failure);
+	public abstract <B> B fold(Function<A, B> success, Function<Exception, B> failure);
 
-	public abstract A recover(Function<Throwable, A> f);
+	public abstract A recover(Function<Exception, A> f);
 
 	public abstract boolean isSuccess();
 
@@ -90,7 +90,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public Either<Throwable, A> toEither() {
+		public Either<Exception, A> toEither() {
 			return Either.right(a);
 		}
 
@@ -100,7 +100,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> Try<B> mape(FE1<A, B> f) throws Throwable {
+		public <B> Try<B> mape(FE1<A, B> f) throws Exception {
 			return new Success<>(f.apply(a));
 		}
 
@@ -115,12 +115,12 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> B fold(Function<A, B> success, Function<Throwable, B> failure) {
+		public <B> B fold(Function<A, B> success, Function<Exception, B> failure) {
 			return success.apply(a);
 		}
 
 		@Override
-		public A recover(Function<Throwable, A> f) {
+		public A recover(Function<Exception, A> f) {
 			return a;
 		}
 
@@ -138,9 +138,9 @@ public abstract class Try<A> {
 
 	public static final class Failure<A> extends Try<A> {
 
-		private final Throwable e;
+		private final Exception e;
 
-		private Failure(Throwable e) {
+		private Failure(Exception e) {
 			this.e = e;
 		}
 
@@ -150,7 +150,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public Either<Throwable, A> toEither() {
+		public Either<Exception, A> toEither() {
 			return Either.left(e);
 		}
 
@@ -160,7 +160,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> Try<B> mape(FE1<A, B> f) throws Throwable {
+		public <B> Try<B> mape(FE1<A, B> f) throws Exception {
 			return new Failure<>(e);
 		}
 
@@ -175,12 +175,12 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> B fold(Function<A, B> success, Function<Throwable, B> failure) {
+		public <B> B fold(Function<A, B> success, Function<Exception, B> failure) {
 			return failure.apply(e);
 		}
 
 		@Override
-		public A recover(Function<Throwable, A> f) {
+		public A recover(Function<Exception, A> f) {
 			return f.apply(e);
 		}
 
