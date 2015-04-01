@@ -71,6 +71,10 @@ public abstract class Option<A> implements Iterable<A> {
 
 	public abstract A getOrElse(Supplier<A> def);
 
+	public abstract Option<A> ifEmpty(Supplier<A> ifEmpty);
+
+	public abstract Option<A> or(Option<A> option);
+
 	public Stream<A> stream() {
 		return StreamSupport.stream(this.spliterator(), false);
 	}
@@ -138,6 +142,16 @@ public abstract class Option<A> implements Iterable<A> {
 		@Override
 		public A getOrElse(Supplier<A> def){
 			return a;
+		}
+
+		@Override
+		public Option<A> ifEmpty(Supplier<A> ifEmpty) {
+			return this;
+		}
+
+		@Override
+		public Option<A> or(Option<A> option) {
+			return this;
 		}
 
 		@Override
@@ -223,6 +237,16 @@ public abstract class Option<A> implements Iterable<A> {
 		@Override
 		public A getOrElse(Supplier<A> def){
 			return def.get();
+		}
+
+		@Override
+		public Option<A> ifEmpty(Supplier<A> ifEmpty) {
+			return Option.of(ifEmpty.get());
+		}
+
+		@Override
+		public Option<A> or(Option<A> option) {
+			return option;
 		}
 
 		@Override

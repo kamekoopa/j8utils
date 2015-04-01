@@ -91,7 +91,9 @@ public class OptionTest {
 
 		@Test(expected = Exception.class)
 		public void flatMap例外透過版は例外を透過する() throws Throwable {
-			option.flatMape(s -> {throw new Exception("");});
+			option.flatMape(s -> {
+				throw new Exception("");
+			});
 		}
 
 		@Test
@@ -147,6 +149,21 @@ public class OptionTest {
 			Option<String> actual = option.ap(ob, oc, od, oe, (a, b, c, d, e) -> a + b + c + d + e);
 
 			assertTrue(actual.isNone());
+		}
+
+		@Test
+		public void ifEmptyで自分自身が取得できる() throws Throwable {
+
+			Option<String> actual = option.ifEmpty(() -> "ifEmpty");
+
+			assertThat(actual, is(option));
+		}
+
+		@Test
+		public void orで自分自身が取得できる() throws Throwable {
+
+			Option<String> actual = option.or(Option.of("ifEmpty"));
+			assertThat(actual, is(option));
 		}
 	}
 
@@ -267,6 +284,36 @@ public class OptionTest {
 			Option<String> actual = option.ap(ob, (a, b) -> a + b);
 
 			assertTrue(actual.isNone());
+		}
+
+		@Test
+		public void ifEmptyにSomeを指定すると引数の方の値が取得できる() throws Throwable {
+
+			Option<String> actual = option.ifEmpty(() -> "ifEmpty");
+
+			assertThat(actual, is(Option.of("ifEmpty")));
+		}
+
+		@Test
+		public void ifEmptyにnullを指定するとNoneが取得できる() throws Throwable {
+
+			Option<String> actual = option.ifEmpty(() -> null);
+
+			assertThat(actual, is(Option.none()));
+		}
+
+		@Test
+		public void orにSomeを指定すると指定したoptionが取得できる() throws Throwable {
+
+			Option<String> actual = option.or(Option.of("ifEmpty"));
+			assertThat(actual, is(Option.of("ifEmpty")));
+		}
+
+		@Test
+		public void orにnoneを指定するとnoneが取得できる() throws Throwable {
+
+			Option<String> actual = option.or(Option.none());
+			assertThat(actual, is(Option.none()));
 		}
 	}
 }
