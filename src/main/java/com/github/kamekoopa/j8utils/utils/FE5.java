@@ -23,5 +23,5 @@ public interface FE5<A, B, C, D, E, X> {
 		return f::apply;
 	}
 
-	X apply(A a, B b, C c, D d, E e) throws Throwable;
+	X apply(A a, B b, C c, D d, E e) throws Exception;
 }

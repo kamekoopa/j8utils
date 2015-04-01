@@ -19,5 +19,5 @@ package com.github.kamekoopa.j8utils.utils;
 @FunctionalInterface
 public interface SE<T> {
 
-	T get() throws Throwable;
+	T get() throws Exception;
 }

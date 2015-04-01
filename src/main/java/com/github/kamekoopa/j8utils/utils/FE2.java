@@ -25,7 +25,7 @@ public interface FE2<A, B, X> {
 		return f::apply;
 	}
 
-	X apply(A a, B b) throws Throwable;
+	X apply(A a, B b) throws Exception;
 
 	default FE2<B, A, X> flip() {
 		return (b, a) -> this.apply(a, b);

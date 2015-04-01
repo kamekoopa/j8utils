@@ -78,8 +78,14 @@ public class FutureBuilder {
 				try {
 					return Future.this.underlying.get();
 				} catch (ExecutionException e) {
-					throw e.getCause();
-				} catch (Throwable e) {
+					try {
+						throw e.getCause();
+					}catch (Error | RuntimeException re){
+						throw re;
+					}catch (Throwable other){
+						throw new RuntimeException(other);
+					}
+				} catch (Exception e) {
 					throw e;
 				}
 			});
@@ -90,8 +96,14 @@ public class FutureBuilder {
 				try {
 					return Future.this.underlying.get(time, unit);
 				} catch (ExecutionException e) {
-					throw e.getCause();
-				} catch (Throwable e) {
+					try {
+						throw e.getCause();
+					}catch (Error | RuntimeException re){
+						throw re;
+					}catch (Throwable other){
+						throw new RuntimeException(other);
+					}
+				} catch (Exception e) {
 					throw e;
 				}
 			});

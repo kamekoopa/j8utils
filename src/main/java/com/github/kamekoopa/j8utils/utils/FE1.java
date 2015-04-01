@@ -25,5 +25,5 @@ public interface FE1<A, X> {
 		return f::apply;
 	}
 
-	X apply(A a) throws Throwable;
+	X apply(A a) throws Exception;
 }

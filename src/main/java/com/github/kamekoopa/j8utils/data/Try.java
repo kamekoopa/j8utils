@@ -26,7 +26,7 @@ public abstract class Try<A> {
 	public static <A> Try<A> of(SE<A> supplier){
 		try {
 			return new Success<>(supplier.get());
-		}catch (Throwable e){
+		}catch (Exception e){
 			return new Failure<>(e);
 		}
 	}

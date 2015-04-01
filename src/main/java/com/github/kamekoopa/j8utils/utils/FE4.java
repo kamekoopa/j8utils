@@ -23,5 +23,5 @@ public interface FE4<A, B, C, D, X> {
 		return f::apply;
 	}
 
-	X apply(A a, B b, C c, D d) throws Throwable;
+	X apply(A a, B b, C c, D d) throws Exception;
 }

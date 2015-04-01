@@ -35,14 +35,14 @@ public class LazyVal<A> {
 
 		try {
 			return gete();
-		}catch(Error | RuntimeException e){
+		}catch(RuntimeException e){
 			throw e;
-		}catch (Throwable e){
+		}catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public A gete() throws Throwable {
+	public A gete() throws Exception {
 
 		if(cache == null){
 			this.cache = supplier.get();
