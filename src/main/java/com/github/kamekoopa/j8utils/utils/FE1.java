@@ -19,16 +19,11 @@ package com.github.kamekoopa.j8utils.utils;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface FE1<A, B> extends Function<A, B> {
+public interface FE1<A, X> {
 
-	@Override
-	public default B apply(A a) {
-		try {
-			return applye(a);
-		}catch (Exception e){
-			throw new RuntimeException(e);
-		}
+	static <A, X> FE1<A, X> from(Function<A, X> f){
+		return f::apply;
 	}
 
-	public B applye(A A) throws Exception;
+	X apply(A a) throws Throwable;
 }

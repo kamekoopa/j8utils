@@ -16,19 +16,8 @@
 
 package com.github.kamekoopa.j8utils.utils;
 
-import java.util.function.Supplier;
-
 @FunctionalInterface
-public interface SE<T> extends Supplier<T> {
+public interface SE<T> {
 
-	@Override
-	public default T get() {
-		try {
-			return gete();
-		}catch (Throwable e){
-			throw new RuntimeException(e);
-		}
-	}
-
-	public T gete() throws Throwable;
+	T get() throws Throwable;
 }

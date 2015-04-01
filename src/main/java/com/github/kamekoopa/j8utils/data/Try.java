@@ -25,7 +25,7 @@ public abstract class Try<A> {
 
 	public static <A> Try<A> of(SE<A> supplier){
 		try {
-			return new Success<>(supplier.gete());
+			return new Success<>(supplier.get());
 		}catch (Throwable e){
 			return new Failure<>(e);
 		}
@@ -41,7 +41,7 @@ public abstract class Try<A> {
 
 	public abstract <B> Try<B> map(Function<A, B> f);
 
-	public abstract <B> Try<B> mape(FE1<A, B> f) throws Exception;
+	public abstract <B> Try<B> mape(FE1<A, B> f) throws Throwable;
 
 	public abstract <B> Try<B> failableMap(FE1<A, B> f);
 
@@ -100,13 +100,13 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> Try<B> mape(FE1<A, B> f) throws Exception {
-			return new Success<>(f.applye(a));
+		public <B> Try<B> mape(FE1<A, B> f) throws Throwable {
+			return new Success<>(f.apply(a));
 		}
 
 		@Override
 		public <B> Try<B> failableMap(FE1<A, B> f) {
-			return Try.of(() -> f.applye(a));
+			return Try.of(() -> f.apply(a));
 		}
 
 		@Override
@@ -160,7 +160,7 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> Try<B> mape(FE1<A, B> f) throws Exception {
+		public <B> Try<B> mape(FE1<A, B> f) throws Throwable {
 			return new Failure<>(e);
 		}
 

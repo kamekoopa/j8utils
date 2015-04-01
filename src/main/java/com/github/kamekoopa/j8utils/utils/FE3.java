@@ -17,20 +17,11 @@
 package com.github.kamekoopa.j8utils.utils;
 
 @FunctionalInterface
-public interface FE3<A, B, C, X> extends F3<A, B, C, X> {
+public interface FE3<A, B, C, X> {
 
-	public static <A, B, C, X> FE3<A, B, C, X> from(F3<A, B, C, X> f){
+	static <A, B, C, X> FE3<A, B, C, X> from(F3<A, B, C, X> f){
 		return f::apply;
 	}
 
-	@Override
-	public default X apply(A a, B b, C c) {
-		try {
-			return applye(a, b, c);
-		}catch (Exception e){
-			throw new RuntimeException(e);
-		}
-	}
-
-	public X applye(A A, B b, C c) throws Exception;
+	X apply(A a, B b, C c) throws Throwable;
 }

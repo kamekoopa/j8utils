@@ -63,7 +63,7 @@ public class EitherTest {
 		}
 
 		@Test(expected = Exception.class)
-		public void mapeは例外を透過する() throws Exception {
+		public void mapeは例外を透過する() throws Throwable {
 			either.mape(i -> {throw new Exception("error");});
 		}
 
@@ -76,7 +76,7 @@ public class EitherTest {
 		}
 
 		@Test(expected = Exception.class)
-		public void flatMapeは例外を透過する() throws Exception {
+		public void flatMapeは例外を透過する() throws Throwable {
 			either.flatMape(i -> {
 				throw new Exception();
 			});
@@ -113,7 +113,7 @@ public class EitherTest {
 		}
 
 		@Test
-		public void 右優先eitherなのでmapeの関数は実行されないため何も起きない() throws Exception {
+		public void 右優先eitherなのでmapeの関数は実行されないため何も起きない() throws Throwable {
 			either.mape(i -> {throw new Exception("error");});
 		}
 
@@ -126,7 +126,7 @@ public class EitherTest {
 		}
 
 		@Test
-		public void 右優先eitherなのでflatMapeの関数は実行されないため何も起きない() throws Exception {
+		public void 右優先eitherなのでflatMapeの関数は実行されないため何も起きない() throws Throwable {
 			either.flatMape(i -> { throw new Exception(); });
 		}
 	}

@@ -64,14 +64,14 @@ public class OptionTest {
 		}
 
 		@Test
-		public void mapeで値を写せる() throws Exception {
+		public void mapeで値を写せる() throws Throwable {
 
 			Integer i = option.mape(String::length).getOrElse(() -> -1);
 			assertThat(i, is(8));
 		}
 
 		@Test(expected = Exception.class)
-		public void mapeでは例外を透過する() throws Exception {
+		public void mapeでは例外を透過する() throws Throwable {
 			option.<Integer>mape(s -> {throw new Exception();}).getOrElse(() -> -1);
 		}
 
@@ -90,7 +90,7 @@ public class OptionTest {
 		}
 
 		@Test(expected = Exception.class)
-		public void flatMap例外透過版は例外を透過する() throws Exception {
+		public void flatMap例外透過版は例外を透過する() throws Throwable {
 			option.flatMape(s -> {throw new Exception("");});
 		}
 
@@ -191,26 +191,26 @@ public class OptionTest {
 		}
 
 		@Test
-		public void mapeしてもnoneのまま() throws Exception {
+		public void mapeしてもnoneのまま() throws Throwable {
 
 			assertTrue(option.mape(String::length).isNone());
 		}
 
 		@Test
-		public void mapeで例外を投げても実行されないのでスローされない() throws Exception {
+		public void mapeで例外を投げても実行されないのでスローされない() throws Throwable {
 			assertTrue(option.<Integer>mape(s -> {
 				throw new Exception();
 			}).isNone());
 		}
 
 		@Test
-		public void flatMapでも関数は実行されないのでsomeには出来ない() throws Exception {
+		public void flatMapでも関数は実行されないのでsomeには出来ない() throws Throwable {
 
 			assertTrue(option.flatMap(s -> Option.of(s.length())).isNone());
 		}
 
 		@Test
-		public void flatMap例外透過版で例外を投げても実行されないのでスローされない() throws Exception {
+		public void flatMap例外透過版で例外を投げても実行されないのでスローされない() throws Throwable {
 			assertTrue(
 				option.flatMape(s -> {
 					throw new Exception("");

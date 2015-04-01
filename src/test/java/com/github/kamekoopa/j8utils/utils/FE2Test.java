@@ -39,7 +39,7 @@ public class FE2Test {
 	}
 
 	@Test
-	public void biFunctionから構築できる() throws Exception {
+	public void biFunctionから構築できる() throws Throwable {
 
 		FE2<String, String, String> fe2 = FE2.from((s1, s2) -> s1 + s2);
 
@@ -47,7 +47,7 @@ public class FE2Test {
 	}
 
 	@Test
-	public void flipできる() throws Exception {
+	public void flipできる() throws Throwable {
 
 		FE2<String, String, String> flip = this.f.flip();
 
@@ -55,7 +55,7 @@ public class FE2Test {
 	}
 
 	@Test
-	public void カリー化できる() throws Exception {
+	public void カリー化できる() throws Throwable {
 
 		FE1<String, FE1<String, String>> curried = f.curried();
 
@@ -63,19 +63,13 @@ public class FE2Test {
 	}
 
 	@Test
-	public void 二関数として使える() throws Exception {
+	public void 二関数として使える() throws Throwable {
 
 		assertThat(f.apply("a","b"), is("ab"));
 	}
 
 	@Test(expected = Exception.class)
-	public void applyeは例外をスローできる() throws Exception {
-
-		fe.applye("a", "b");
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void 例外をスローする関数本体を持つFE2のapplyを呼ぶと実行時例外にラップされてスローされる() throws Exception {
+	public void applyeは例外をスローできる() throws Throwable {
 
 		fe.apply("a", "b");
 	}

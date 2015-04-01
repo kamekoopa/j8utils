@@ -19,28 +19,19 @@ package com.github.kamekoopa.j8utils.utils;
 import java.util.function.BiFunction;
 
 @FunctionalInterface
-public interface FE2<A, B, C> extends BiFunction<A, B, C> {
+public interface FE2<A, B, X> {
 
-	public static <A, B, C> FE2<A, B, C> from(BiFunction<A, B, C> f){
+	static <A, B, X> FE2<A, B, X> from(BiFunction<A, B, X> f){
 		return f::apply;
 	}
 
-	@Override
-	public default C apply(A a, B b) {
-		try {
-			return applye(a, b);
-		}catch (Exception e){
-			throw new RuntimeException(e);
-		}
-	}
+	X apply(A a, B b) throws Throwable;
 
-	public C applye(A A, B b) throws Exception;
-
-	public default FE2<B, A, C> flip() {
+	default FE2<B, A, X> flip() {
 		return (b, a) -> this.apply(a, b);
 	}
 
-	public default FE1<A, FE1<B, C>> curried() {
+	default FE1<A, FE1<B, X>> curried() {
 		return a -> b -> this.apply(a, b);
 	}
 }

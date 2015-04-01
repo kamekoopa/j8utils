@@ -40,24 +40,24 @@ public final class Tuple3<A, B, C> {
 		return Tuple3.of(f.apply(_1), _2, _3);
 	}
 
-	public <AA> Tuple3<AA, B, C> mod1(FE1<A, AA> f) throws Exception {
-		return Tuple3.of(f.applye(_1), _2, _3);
+	public <AA> Tuple3<AA, B, C> mod1e(FE1<A, AA> f) throws Throwable {
+		return Tuple3.of(f.apply(_1), _2, _3);
 	}
 
 	public <BB> Tuple3<A, BB, C> mod2(Function<B, BB> f){
 		return Tuple3.of(_1, f.apply(_2), _3);
 	}
 
-	public <BB> Tuple3<A, BB, C> mod2(FE1<B, BB> f) throws Exception {
-		return Tuple3.of(_1, f.applye(_2), _3);
+	public <BB> Tuple3<A, BB, C> mod2e(FE1<B, BB> f) throws Throwable {
+		return Tuple3.of(_1, f.apply(_2), _3);
 	}
 
 	public <CC> Tuple3<A, B, CC> mod3(Function<C, CC> f){
 		return Tuple3.of(_1, _2, f.apply(_3));
 	}
 
-	public <CC> Tuple3<A, B, CC> mod3(FE1<C, CC> f) throws Exception {
-		return Tuple3.of(_1, _2, f.applye(_3));
+	public <CC> Tuple3<A, B, CC> mod3e(FE1<C, CC> f) throws Throwable {
+		return Tuple3.of(_1, _2, f.apply(_3));
 	}
 
 	@Override

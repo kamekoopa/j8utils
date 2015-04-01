@@ -17,20 +17,11 @@
 package com.github.kamekoopa.j8utils.utils;
 
 @FunctionalInterface
-public interface FE4<A, B, C, D, X> extends F4<A, B, C, D, X> {
+public interface FE4<A, B, C, D, X> {
 
-	public static <A, B, C, D, X> FE4<A, B, C, D, X> from(F4<A, B, C, D, X> f){
+	static <A, B, C, D, X> FE4<A, B, C, D, X> from(F4<A, B, C, D, X> f){
 		return f::apply;
 	}
 
-	@Override
-	public default X apply(A a, B b, C c, D d) {
-		try {
-			return applye(a, b, c, d);
-		}catch (Exception e){
-			throw new RuntimeException(e);
-		}
-	}
-
-	public X applye(A A, B b, C c, D d) throws Exception;
+	X apply(A a, B b, C c, D d) throws Throwable;
 }

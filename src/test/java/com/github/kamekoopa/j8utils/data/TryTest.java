@@ -64,7 +64,7 @@ public class TryTest {
 		}
 
 		@Test(expected = Exception.class)
-		public void mapeは例外を透過する() throws Exception {
+		public void mapeは例外を透過する() throws Throwable {
 			test.mape(s -> {
 				throw new Exception();
 			});
@@ -172,7 +172,7 @@ public class TryTest {
 		}
 
 		@Test
-		public void mapeは実行されないので関数内で例外を投げても何も起きない() throws Exception {
+		public void mapeは実行されないので関数内で例外を投げても何も起きない() throws Throwable {
 
 			test.mape(s -> {
 				throw new Exception();

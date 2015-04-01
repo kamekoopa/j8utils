@@ -36,11 +36,11 @@ public abstract class Either<A, B> {
 
 	public abstract <BB> Either<A, BB> map(Function<B, BB> f);
 
-	public abstract <BB> Either<A, BB> mape(FE1<B, BB> f) throws Exception;
+	public abstract <BB> Either<A, BB> mape(FE1<B, BB> f) throws Throwable;
 
 	public abstract <BB> Either<A, BB> flatMap(Function<B, Either<A, BB>> f);
 
-	public abstract <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Exception;
+	public abstract <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Throwable;
 
 	public abstract <C> C fold(Function<A, C> fl, Function<B, C> fr);
 
@@ -69,7 +69,7 @@ public abstract class Either<A, B> {
 		}
 
 		@Override
-		public <BB> Either<A, BB> mape(FE1<B, BB> f) throws Exception {
+		public <BB> Either<A, BB> mape(FE1<B, BB> f) throws Throwable {
 			return new Left<>(a);
 		}
 
@@ -79,7 +79,7 @@ public abstract class Either<A, B> {
 		}
 
 		@Override
-		public <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Exception {
+		public <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Throwable {
 			return new Left<>(a);
 		}
 
@@ -113,8 +113,8 @@ public abstract class Either<A, B> {
 		}
 
 		@Override
-		public <BB> Either<A, BB> mape(FE1<B, BB> f) throws Exception {
-			return new Right<>(f.applye(b));
+		public <BB> Either<A, BB> mape(FE1<B, BB> f) throws Throwable {
+			return new Right<>(f.apply(b));
 		}
 
 		@Override
@@ -123,8 +123,8 @@ public abstract class Either<A, B> {
 		}
 
 		@Override
-		public <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Exception {
-			return f.applye(b);
+		public <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Throwable {
+			return f.apply(b);
 		}
 
 		@Override

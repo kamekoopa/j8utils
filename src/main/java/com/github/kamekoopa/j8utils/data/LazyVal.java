@@ -33,17 +33,17 @@ public class LazyVal<A> {
 
 	public A get() {
 
-		if(cache == null){
-			this.cache = supplier.get();
+		try {
+			return gete();
+		}catch (Throwable e){
+			throw new RuntimeException(e);
 		}
-
-		return cache;
 	}
 
 	public A gete() throws Throwable {
 
 		if(cache == null){
-			this.cache = supplier.gete();
+			this.cache = supplier.get();
 		}
 
 		return cache;

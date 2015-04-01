@@ -56,11 +56,11 @@ public class Tuple3Test {
 	}
 
 	@Test(expected = Exception.class)
-	public void 例外投げられる版mod1内で起きた例外は透過する() throws Exception {
+	public void 例外投げられる版mod1内で起きた例外は透過する() throws Throwable {
 
 		Tuple3<String, Integer, Double> t1 = Tuple3.of("one", 1, 1.0);
 
-		t1.<Integer>mod1(_1 -> {
+		t1.<Integer>mod1e(_1 -> {
 			throw new Exception();
 		});
 	}
@@ -74,11 +74,11 @@ public class Tuple3Test {
 	}
 
 	@Test(expected = Exception.class)
-	public void 例外投げられる版mod2内で起きた例外は透過する() throws Exception {
+	public void 例外投げられる版mod2内で起きた例外は透過する() throws Throwable {
 
 		Tuple3<String, Integer, Double> t1 = Tuple3.of("one", 1, 1.0);
 
-		t1.<Integer>mod2(_2 -> {
+		t1.<Integer>mod2e(_2 -> {
 			throw new Exception();
 		});
 	}
@@ -92,11 +92,11 @@ public class Tuple3Test {
 	}
 
 	@Test(expected = Exception.class)
-	public void 例外投げられる版mod3内で起きた例外は透過する() throws Exception {
+	public void 例外投げられる版mod3内で起きた例外は透過する() throws Throwable {
 
 		Tuple3<String, Integer, Double> t1 = Tuple3.of("one", 1, 1.0);
 
-		t1.<Integer>mod3(_3 -> {
+		t1.<Integer>mod3e(_3 -> {
 			throw new Exception();
 		});
 	}

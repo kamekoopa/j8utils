@@ -61,11 +61,11 @@ public abstract class Option<A> implements Iterable<A> {
 
 	public abstract <B> Option<B> map(Function<A, B> f);
 
-	public abstract <B> Option<B> mape(FE1<A, B> f) throws Exception;
+	public abstract <B> Option<B> mape(FE1<A, B> f) throws Throwable;
 
 	public abstract <B> Option<B> flatMap(Function<A, Option<B>> f);
 
-	public abstract <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Exception;
+	public abstract <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Throwable;
 
 	public abstract <B> B fold(Supplier<B> none, Function<A, B> f);
 
@@ -116,8 +116,8 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public <B> Option<B> mape(FE1<A, B> f) throws Exception {
-			return new Some<>(f.applye(a));
+		public <B> Option<B> mape(FE1<A, B> f) throws Throwable {
+			return new Some<>(f.apply(a));
 		}
 
 		@Override
@@ -126,8 +126,8 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Exception {
-			return f.applye(a);
+		public <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Throwable {
+			return f.apply(a);
 		}
 
 		@Override
@@ -201,7 +201,7 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public <B> Option<B> mape(FE1<A, B> f) throws Exception {
+		public <B> Option<B> mape(FE1<A, B> f) throws Throwable {
 			return none();
 		}
 
@@ -211,7 +211,7 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Exception {
+		public <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Throwable {
 			return none();
 		}
 
