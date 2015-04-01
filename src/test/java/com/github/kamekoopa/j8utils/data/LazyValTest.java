@@ -32,6 +32,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(JUnit4.class)
 public class LazyValTest {
 
+	static class RE extends RuntimeException{}
 
 	@Test
 	public void getするまで評価されない() throws Exception {
@@ -70,5 +71,15 @@ public class LazyValTest {
 	@Test(expected = Exception.class)
 	public void 値を遅延提供するsupplierが例外を投げる時gete時に例外をスローする() throws Throwable {
 		LazyVal.of(() -> { throw new Exception(); }).gete();
+	}
+
+	@Test(expected = Error.class)
+	public void 値を遅延提供するsupplierがエラーを投げる時get時にエラーがそのままスローされる() throws Throwable {
+		LazyVal.of(() -> { throw new Error(); }).get();
+	}
+
+	@Test(expected = RE.class)
+	public void 値を遅延提供するsupplierが実行時例外を投げる時その実行時例外がそのままスローされる() throws Throwable {
+		LazyVal.of(() -> { throw new RE(); }).get();
 	}
 }

@@ -35,6 +35,8 @@ public class LazyVal<A> {
 
 		try {
 			return gete();
+		}catch(Error | RuntimeException e){
+			throw e;
 		}catch (Throwable e){
 			throw new RuntimeException(e);
 		}
