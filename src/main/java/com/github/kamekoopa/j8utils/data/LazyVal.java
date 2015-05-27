@@ -20,6 +20,8 @@ import com.github.kamekoopa.j8utils.utils.SE;
 
 public class LazyVal<A> {
 
+	private final Object lock = new Object();
+
 	private final SE<A> supplier;
 	private A cache = null;
 
@@ -44,8 +46,10 @@ public class LazyVal<A> {
 
 	public A gete() throws Exception {
 
-		if(cache == null){
-			this.cache = supplier.get();
+		synchronized (lock) {
+			if (cache == null) {
+				this.cache = supplier.get();
+			}
 		}
 
 		return cache;
