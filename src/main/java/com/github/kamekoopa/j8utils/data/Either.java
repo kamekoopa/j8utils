@@ -34,15 +34,15 @@ public abstract class Either<A, B> {
 
 	public abstract boolean isRight();
 
-	public abstract <BB> Either<A, BB> map(Function<B, BB> f);
+	public abstract <BB> Either<A, BB> map(Function<? super B, ? extends BB> f);
 
-	public abstract <BB> Either<A, BB> mape(FE1<B, BB> f) throws Exception;
+	public abstract <BB> Either<A, BB> mape(FE1<? super B, ? extends BB> f) throws Exception;
 
-	public abstract <BB> Either<A, BB> flatMap(Function<B, Either<A, BB>> f);
+	public abstract <BB> Either<A, BB> flatMap(Function<? super B, Either<A, BB>> f);
 
-	public abstract <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Exception;
+	public abstract <BB> Either<A, BB> flatMape(FE1<? super B, Either<A, BB>> f) throws Exception;
 
-	public abstract <C> C fold(Function<A, C> fl, Function<B, C> fr);
+	public abstract <C> C fold(Function<? super A, ? extends C> fl, Function<? super B, ? extends C> fr);
 
 
 	public static class Left<A, B> extends Either<A, B> {
@@ -64,27 +64,27 @@ public abstract class Either<A, B> {
 		}
 
 		@Override
-		public <BB> Either<A, BB> map(Function<B, BB> f) {
+		public <BB> Either<A, BB> map(Function<? super B, ? extends BB> f) {
 			return new Left<>(a);
 		}
 
 		@Override
-		public <BB> Either<A, BB> mape(FE1<B, BB> f) throws Exception {
+		public <BB> Either<A, BB> mape(FE1<? super B, ? extends BB> f) throws Exception {
 			return new Left<>(a);
 		}
 
 		@Override
-		public <BB> Either<A, BB> flatMap(Function<B, Either<A, BB>> f) {
+		public <BB> Either<A, BB> flatMap(Function<? super B, Either<A, BB>> f) {
 			return new Left<>(a);
 		}
 
 		@Override
-		public <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Exception {
+		public <BB> Either<A, BB> flatMape(FE1<? super B, Either<A, BB>> f) throws Exception {
 			return new Left<>(a);
 		}
 
 		@Override
-		public <C> C fold(Function<A, C> fl, Function<B, C> fr)  {
+		public <C> C fold(Function<? super A, ? extends C> fl, Function<? super B, ? extends C> fr) {
 			return fl.apply(a);
 		}
 	}
@@ -108,27 +108,27 @@ public abstract class Either<A, B> {
 		}
 
 		@Override
-		public <C> Either<A, C> map(Function<B, C> f) {
+		public <BB> Either<A, BB> map(Function<? super B, ? extends BB> f) {
 			return new Right<>(f.apply(b));
 		}
 
 		@Override
-		public <BB> Either<A, BB> mape(FE1<B, BB> f) throws Exception {
+		public <BB> Either<A, BB> mape(FE1<? super B, ? extends BB> f) throws Exception {
 			return new Right<>(f.apply(b));
 		}
 
 		@Override
-		public <BB> Either<A, BB> flatMap(Function<B, Either<A, BB>> f) {
+		public <BB> Either<A, BB> flatMap(Function<? super B, Either<A, BB>> f) {
 			return f.apply(b);
 		}
 
 		@Override
-		public <BB> Either<A, BB> flatMape(FE1<B, Either<A, BB>> f) throws Exception {
+		public <BB> Either<A, BB> flatMape(FE1<? super B, Either<A, BB>> f) throws Exception {
 			return f.apply(b);
 		}
 
 		@Override
-		public <C> C fold(Function<A, C> fl, Function<B, C> fr)  {
+		public <C> C fold(Function<? super A, ? extends C> fl, Function<? super B, ? extends C> fr) {
 			return fr.apply(b);
 		}
 	}

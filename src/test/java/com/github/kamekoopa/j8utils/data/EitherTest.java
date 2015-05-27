@@ -16,6 +16,7 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.utils.FE1;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -23,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.Date;
+import java.util.function.Function;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -32,6 +34,103 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(Enclosed.class)
 public class EitherTest {
+
+	static class A {
+		final int a;
+		public A(int a) {
+			this.a = a;
+		}
+	}
+
+	static class B extends A {
+		final int b;
+		public B(int a, int b) {
+			super(a);
+			this.b = b;
+		}
+	}
+
+	static class C extends B {
+		final int c;
+		public C(int a, int b, int c) {
+			super(a, b);
+			this.c = c;
+		}
+	}
+
+	@RunWith(JUnit4.class)
+	public static class 共通 {
+
+		@Test
+		public void mapの共変反変() throws Exception {
+
+			Either<B, B> either = Either.right(new B(1, 2));
+
+			Function<A, C> mapper = a -> new C(a.a, 10, 100);
+
+			Either<B, B> mapped = either.map(mapper);
+
+			assertTrue(mapped.isRight());
+			assertThat(mapped.fold(Function.identity(), Function.identity()).a, is(1));
+			assertThat(mapped.fold(Function.identity(), Function.identity()).b, is(10));
+		}
+
+		@Test
+		public void mapeの共変反変() throws Exception {
+
+			Either<B, B> either = Either.right(new B(1, 2));
+
+			FE1<A, C> mapper = a -> new C(a.a, 10, 100);
+
+			Either<B, B> mapped = either.mape(mapper);
+
+			assertTrue(mapped.isRight());
+			assertThat(mapped.fold(Function.identity(), Function.identity()).a, is(1));
+			assertThat(mapped.fold(Function.identity(), Function.identity()).b, is(10));
+		}
+
+		@Test
+		public void flatMapの共変反変() throws Exception {
+
+			Either<B, B> either = Either.right(new B(1, 2));
+
+			Function<A, Either<B, C>> mapper = a -> Either.left(new C(a.a, 10, 100));
+
+			Either<B, C> mapped = either.flatMap(mapper);
+
+			assertTrue(mapped.isLeft());
+			assertThat(mapped.fold(Function.identity(), Function.identity()).a, is(1));
+			assertThat(mapped.fold(Function.identity(), Function.identity()).b, is(10));
+		}
+
+		@Test
+		public void flatMapeの共変反変() throws Exception {
+
+			Either<B, B> either = Either.right(new B(1, 2));
+
+			FE1<A, Either<B, C>> mapper = a -> Either.left(new C(a.a, 10, 100));
+
+			Either<B, C> mapped = either.flatMape(mapper);
+
+			assertTrue(mapped.isLeft());
+			assertThat(mapped.fold(Function.identity(), Function.identity()).a, is(1));
+			assertThat(mapped.fold(Function.identity(), Function.identity()).b, is(10));
+		}
+
+		@Test
+		public void foldの共変反変() throws Exception {
+
+			Either<B, B> either = Either.right(new B(1, 2));
+
+			Function<A, B> fl = a -> new B(a.a, 10);
+			Function<B, C> fr = b -> new C(b.a, b.b, 100);
+
+			B folded = either.fold(fl, fr);
+
+			assertThat(folded.a, is(1));
+			assertThat(folded.b, is(2));
+		}
+	}
 
 	@RunWith(JUnit4.class)
 	public static class 右 {
