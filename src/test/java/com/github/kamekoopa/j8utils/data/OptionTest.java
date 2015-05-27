@@ -16,6 +16,11 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.test.Tools.*;
+import com.github.kamekoopa.j8utils.utils.F3;
+import com.github.kamekoopa.j8utils.utils.F4;
+import com.github.kamekoopa.j8utils.utils.F5;
+import com.github.kamekoopa.j8utils.utils.FE1;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -23,14 +28,199 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(Enclosed.class)
 public class OptionTest {
+
+	@RunWith(JUnit4.class)
+	public static class 共通 {
+
+		@Test
+		public void mapの共変反変() throws Exception {
+
+			Option<B> option = Option.of(new B(1, 2));
+
+			Function<A, C> mapper = a -> new C(a.a, 10, 100);
+
+			Option<B> mapped = option.map(mapper);
+
+			assertTrue(mapped.isSome());
+			assertThat(mapped.fold(() -> new B(0, 0), Function.identity()).a, is(1));
+			assertThat(mapped.fold(() -> new B(0, 0), Function.identity()).b, is(10));
+		}
+
+		@Test
+		public void mapeの共変反変() throws Exception {
+
+			Option<B> option = Option.of(new B(1, 2));
+
+			FE1<A, C> mapper = a -> new C(a.a, 10, 100);
+
+			Option<B> mapped = option.mape(mapper);
+
+			assertTrue(mapped.isSome());
+			assertThat(mapped.fold(() -> new B(0, 0), Function.identity()).a, is(1));
+			assertThat(mapped.fold(() -> new B(0, 0), Function.identity()).b, is(10));
+		}
+
+		@Test
+		public void flatMapの共変反変() throws Exception {
+
+			Option<B> option = Option.of(new B(1, 2));
+
+			Function<A, Option<C>> mapper = a -> Option.of(new C(a.a, 10, 100));
+
+			Option<B> mapped = option.<B>flatMap(mapper);
+
+			assertTrue(mapped.isSome());
+			assertThat(mapped.fold(() -> new B(0, 0), Function.identity()).a, is(1));
+			assertThat(mapped.fold(() -> new B(0, 0), Function.identity()).b, is(10));
+		}
+
+		@Test
+		public void flatMapeの共変反変() throws Exception {
+
+			Option<B> option = Option.of(new B(1, 2));
+
+			FE1<A, Option<C>> mapper = a -> Option.of(new C(a.a, 10, 100));
+
+			Option<B> mapped = option.<B>flatMape(mapper);
+
+			assertTrue(mapped.isSome());
+			assertThat(mapped.fold(() -> new B(0, 0), Function.identity()).a, is(1));
+			assertThat(mapped.fold(() -> new B(0, 0), Function.identity()).b, is(10));
+		}
+
+		@Test
+		public void foldの共変反変() throws Exception {
+
+			Option<B> option = Option.of(new B(1, 2));
+
+			Supplier<C> zero = () -> new C(0, 0, 0);
+			Function<A, C> f = a -> new C(a.a, a.a, 100);
+
+			B folded = option.<B>fold(zero, f);
+
+			assertThat(folded.a, is(1));
+			assertThat(folded.b, is(1));
+		}
+
+		@Test
+		public void getOrElseの共変反変() throws Exception {
+
+			Option<B> option = Option.of(new B(1, 2));
+
+			Supplier<C> zero = () -> new C(0, 0, 0);
+
+			B get = option.<B>getOrElse(zero);
+
+			assertThat(get.a, is(1));
+			assertThat(get.b, is(2));
+		}
+
+		@Test
+		public void orの共変反変() throws Exception {
+
+			Option<B> option = Option.of(new B(1, 2));
+
+			Supplier<Option<C>> zero = () -> Option.of(new C(10, 20, 30));
+
+			Option<B> get = option.or(zero);
+
+			assertTrue(get.isSome());
+			assertThat(get.fold(() -> new B(0, 0), Function.identity()).a, is(1));
+			assertThat(get.fold(() -> new B(0, 0), Function.identity()).b, is(2));
+		}
+
+		@Test
+		public void ifEmptyの共変反変() throws Exception {
+
+			Option<B> option = Option.of(new B(1, 2));
+
+			Supplier<C> zero = () -> new C(0, 0, 0);
+
+			Option<B> get = option.<B>ifEmpty(zero);
+
+			assertTrue(get.isSome());
+			assertThat(get.fold(() -> new B(0, 0), Function.identity()).a, is(1));
+			assertThat(get.fold(() -> new B(0, 0), Function.identity()).b, is(2));
+		}
+
+		@Test
+		public void ap1の共変反変() throws Exception {
+
+			Option<B> option1 = Option.of(new B(1, 2));
+			Option<C> option2 = Option.of(new C(10, 20, 30));
+
+			BiFunction<A, A, C> f = (a1, a2) -> new C(a1.a, a1.a, a2.a);
+
+			Option<B> ap = option1.<A, B>ap(option2, f);
+
+			assertTrue(ap.isSome());
+			assertThat(ap.getOrElse(() -> new B(0, 0)).a, is(1));
+			assertThat(ap.getOrElse(() -> new B(0, 0)).b, is(1));
+		}
+
+		@Test
+		public void ap2の共変反変() throws Exception {
+
+			Option<B> option1 = Option.of(new B(1, 2));
+			Option<C> option2 = Option.of(new C(10, 20, 30));
+			Option<D> option3 = Option.of(new D(100,200, 300, 400));
+
+			F3<A, A, A, D> f = (a, b, c) -> new D(a.a, a.a, b.a, c.a);
+
+			Option<B> ap = option1.<A, A, B>ap(option2, option3, f);
+
+			assertTrue(ap.isSome());
+			assertThat(ap.getOrElse(() -> new B(0, 0)).a, is(1));
+			assertThat(ap.getOrElse(() -> new B(0, 0)).b, is(1));
+		}
+
+		@Test
+		public void ap3の共変反変() throws Exception {
+
+			Option<B> option1 = Option.of(new B(1, 2));
+			Option<C> option2 = Option.of(new C(10, 20, 30));
+			Option<D> option3 = Option.of(new D(100,200, 300, 400));
+			Option<E> option4 = Option.of(new E(1000,2000, 3000, 4000, 5000));
+
+			F4<A, A, A, A, E> f = (a, b, c, d) -> new E(a.a, a.a, b.a, c.a, d.a);
+
+			Option<B> ap = option1.<A, A, A, B>ap(option2, option3, option4, f);
+
+			assertTrue(ap.isSome());
+			assertThat(ap.getOrElse(() -> new B(0, 0)).a, is(1));
+			assertThat(ap.getOrElse(() -> new B(0, 0)).b, is(1));
+		}
+
+		@Test
+		public void ap4の共変反変() throws Exception {
+
+			Option<B> option1 = Option.of(new B(1, 2));
+			Option<C> option2 = Option.of(new C(10, 20, 30));
+			Option<D> option3 = Option.of(new D(100,200, 300, 400));
+			Option<E> option4 = Option.of(new E(1000,2000, 3000, 4000, 5000));
+			Option<F> option5 = Option.of(new F(10000,20000, 30000, 40000, 50000, 6000));
+
+			F5<A, A, A, A, A, F> f = (a, b, c, d, e) -> new F(a.a, a.a, b.a, c.a, d.a, e.a);
+
+			Option<B> ap = option1.<A, A, A, A, B>ap(option2, option3, option4, option5, f);
+
+			assertTrue(ap.isSome());
+			assertThat(ap.getOrElse(() -> new B(0, 0)).a, is(1));
+			assertThat(ap.getOrElse(() -> new B(0, 0)).b, is(1));
+		}
+	}
 
 
 	@RunWith(JUnit4.class)

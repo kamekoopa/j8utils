@@ -59,39 +59,39 @@ public abstract class Option<A> implements Iterable<A> {
 
 	public abstract boolean isNone();
 
-	public abstract <B> Option<B> map(Function<A, B> f);
+	public abstract <B> Option<B> map(Function<? super A, ? extends B> f);
 
-	public abstract <B> Option<B> mape(FE1<A, B> f) throws Exception;
+	public abstract <B> Option<B> mape(FE1<? super A, ? extends B> f) throws Exception;
 
-	public abstract <B> Option<B> flatMap(Function<A, Option<B>> f);
+	public abstract <B> Option<B> flatMap(Function<? super A, ? extends Option<? extends B>> f);
 
-	public abstract <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Exception;
+	public abstract <B> Option<B> flatMape(FE1<? super A, ? extends Option<? extends B>> f) throws Exception;
 
-	public abstract <B> B fold(Supplier<B> none, Function<A, B> f);
+	public abstract <B> B fold(Supplier<? extends B> none, Function<? super A, ? extends B> f);
 
-	public abstract A getOrElse(Supplier<A> def);
+	public abstract A getOrElse(Supplier<? extends A> def);
 
-	public abstract Option<A> ifEmpty(Supplier<A> ifEmpty);
+	public abstract Option<A> ifEmpty(Supplier<? extends A> ifEmpty);
 
-	public abstract Option<A> or(Supplier<Option<A>> optionSupplier);
+	public abstract Option<A> or(Supplier<? extends Option<? extends A>> optionSupplier);
 
 	public Stream<A> stream() {
 		return StreamSupport.stream(this.spliterator(), false);
 	}
 
-	public <B, X> Option<X> ap(Option<B> ob, BiFunction<A, B, X> f) {
+	public <B, X> Option<X> ap(Option<? extends B> ob, BiFunction<? super A, ? super B, ? extends X> f) {
 		return this.flatMap(a -> ob.map(b -> f.apply(a, b)));
 	}
 
-	public <B, C, X> Option<X> ap(Option<B> ob, Option<C> oc, F3<A, B, C, X> f) {
+	public <B, C, X> Option<X> ap(Option<? extends B> ob, Option<? extends C> oc, F3<? super A, ? super B, ? super C, ? extends X> f) {
 		return this.flatMap(a -> ob.flatMap(b -> oc.map(c -> f.apply(a, b, c))));
 	}
 
-	public <B, C, D, X> Option<X> ap(Option<B> ob, Option<C> oc, Option<D> od, F4<A, B, C, D, X> f) {
+	public <B, C, D, X> Option<X> ap(Option<? extends B> ob, Option<? extends C> oc, Option<? extends D> od, F4<? super A, ? super B, ? super C, ? super D, ? extends X> f) {
 		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.map(d -> f.apply(a, b, c, d)))));
 	}
 
-	public <B, C, D, E, X> Option<X> ap(Option<B> ob, Option<C> oc, Option<D> od, Option<E> oe, F5<A, B, C, D, E, X> f) {
+	public <B, C, D, E, X> Option<X> ap(Option<? extends B> ob, Option<? extends C> oc, Option<? extends D> od, Option<? extends E> oe, F5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends X> f) {
 		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.flatMap(d -> oe.map( e->f.apply(a, b, c, d, e))))));
 	}
 
@@ -115,42 +115,42 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public <B> Option<B> map(Function<A, B> f) {
+		public <B> Option<B> map(Function<? super A, ? extends B> f) {
 			return new Some<>(f.apply(a));
 		}
 
 		@Override
-		public <B> Option<B> mape(FE1<A, B> f) throws Exception {
+		public <B> Option<B> mape(FE1<? super A, ? extends B> f) throws Exception {
 			return new Some<>(f.apply(a));
 		}
 
 		@Override
-		public <B> Option<B> flatMap(Function<A, Option<B>> f) {
+		public <B> Option<B> flatMap(Function<? super A, ? extends Option<? extends B>> f) {
+			return f.apply(a).map(Function.identity());
+		}
+
+		@Override
+		public <B> Option<B> flatMape(FE1<? super A, ? extends Option<? extends B>> f) throws Exception {
+			return f.apply(a).map(Function.identity());
+		}
+
+		@Override
+		public <B> B fold(Supplier<? extends B> none, Function<? super A, ? extends B> f) {
 			return f.apply(a);
 		}
 
 		@Override
-		public <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Exception {
-			return f.apply(a);
-		}
-
-		@Override
-		public <B> B fold(Supplier<B> none, Function<A, B> f) {
-			return f.apply(a);
-		}
-
-		@Override
-		public A getOrElse(Supplier<A> def){
+		public A getOrElse(Supplier<? extends A> def){
 			return a;
 		}
 
 		@Override
-		public Option<A> ifEmpty(Supplier<A> ifEmpty) {
+		public Option<A> ifEmpty(Supplier<? extends A> ifEmpty) {
 			return this;
 		}
 
 		@Override
-		public Option<A> or(Supplier<Option<A>> optionSupplier) {
+		public Option<A> or(Supplier<? extends Option<? extends A>> optionSupplier) {
 			return this;
 		}
 
@@ -210,43 +210,43 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
-		public <B> Option<B> map(Function<A, B> f) {
+		public <B> Option<B> map(Function<? super A, ? extends B> f) {
 			return none();
 		}
 
 		@Override
-		public <B> Option<B> mape(FE1<A, B> f) throws Exception {
+		public <B> Option<B> mape(FE1<? super A, ? extends B> f) throws Exception {
 			return none();
 		}
 
 		@Override
-		public <B> Option<B> flatMap(Function<A, Option<B>> f) {
+		public <B> Option<B> flatMap(Function<? super A, ? extends Option<? extends B>> f) {
 			return none();
 		}
 
 		@Override
-		public <B> Option<B> flatMape(FE1<A, Option<B>> f) throws Exception {
+		public <B> Option<B> flatMape(FE1<? super A, ? extends Option<? extends B>> f) throws Exception {
 			return none();
 		}
 
 		@Override
-		public <B> B fold(Supplier<B> none, Function<A, B> f) {
+		public <B> B fold(Supplier<? extends B> none, Function<? super A, ? extends B> f) {
 			return none.get();
 		}
 
 		@Override
-		public A getOrElse(Supplier<A> def){
+		public A getOrElse(Supplier<? extends A> def){
 			return def.get();
 		}
 
 		@Override
-		public Option<A> ifEmpty(Supplier<A> ifEmpty) {
+		public Option<A> ifEmpty(Supplier<? extends A> ifEmpty) {
 			return Option.of(ifEmpty.get());
 		}
 
 		@Override
-		public Option<A> or(Supplier<Option<A>> optionSupplier) {
-			return optionSupplier.get();
+		public Option<A> or(Supplier<? extends Option<? extends A>> optionSupplier) {
+			return optionSupplier.get().map(Function.identity());
 		}
 
 		@Override

@@ -16,6 +16,9 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.test.Tools.A;
+import com.github.kamekoopa.j8utils.test.Tools.B;
+import com.github.kamekoopa.j8utils.test.Tools.C;
 import com.github.kamekoopa.j8utils.utils.FE1;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,36 +30,13 @@ import java.util.Date;
 import java.util.function.Function;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
 @RunWith(Enclosed.class)
 public class EitherTest {
-
-	static class A {
-		final int a;
-		public A(int a) {
-			this.a = a;
-		}
-	}
-
-	static class B extends A {
-		final int b;
-		public B(int a, int b) {
-			super(a);
-			this.b = b;
-		}
-	}
-
-	static class C extends B {
-		final int c;
-		public C(int a, int b, int c) {
-			super(a, b);
-			this.c = c;
-		}
-	}
 
 	@RunWith(JUnit4.class)
 	public static class 共通 {
