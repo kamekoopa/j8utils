@@ -17,9 +17,15 @@
 package com.github.kamekoopa.j8utils.data;
 
 
+import com.github.kamekoopa.j8utils.test.Tools.A;
+import com.github.kamekoopa.j8utils.test.Tools.B;
+import com.github.kamekoopa.j8utils.test.Tools.C;
+import com.github.kamekoopa.j8utils.utils.FE1;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.util.function.Function;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -76,5 +82,56 @@ public class Tuple2Test {
 
 		Tuple2<String, String> t1 = Tuple2.of("one", "a");
 		t1.<Integer>mod2e(Integer::valueOf);
+	}
+
+	@Test
+	public void mod1共変反変() throws Exception {
+
+		Tuple2<B, B> t2 = Tuple2.of(new B(1, 2), new B(3, 4));
+
+		Function<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple2<B, B> mapped = t2.<B>mod1(mapper);
+
+		assertThat(mapped._1.a, is(1));
+		assertThat(mapped._1.b, is(10));
+
+	}
+
+	@Test
+	public void mod1e共変反変() throws Exception {
+
+		Tuple2<B, B> t2 = Tuple2.of(new B(1, 2), new B(3, 4));
+
+		FE1<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple2<B, B> mapped = t2.<B>mod1e(mapper);
+
+		assertThat(mapped._1.a, is(1));
+		assertThat(mapped._1.b, is(10));
+
+	}
+
+	@Test
+	public void mod2共変反変() throws Exception {
+
+		Tuple2<B, B> t2 = Tuple2.of(new B(1, 2), new B(3, 4));
+
+		Function<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple2<B, B> mapped = t2.<B>mod2(mapper);
+
+		assertThat(mapped._2.a, is(3));
+		assertThat(mapped._2.b, is(10));
+
+	}
+
+	@Test
+	public void mod2e共変反変() throws Exception {
+
+		Tuple2<B, B> t2 = Tuple2.of(new B(1, 2), new B(3, 4));
+
+		FE1<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple2<B, B> mapped = t2.<B>mod2e(mapper);
+
+		assertThat(mapped._2.a, is(3));
+		assertThat(mapped._2.b, is(10));
 	}
 }

@@ -16,15 +16,21 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.test.Tools.A;
+import com.github.kamekoopa.j8utils.test.Tools.B;
+import com.github.kamekoopa.j8utils.test.Tools.C;
+import com.github.kamekoopa.j8utils.utils.FE1;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(JUnit4.class)
 public class Tuple3Test {
@@ -99,5 +105,81 @@ public class Tuple3Test {
 		t1.<Integer>mod3e(_3 -> {
 			throw new Exception();
 		});
+	}
+
+	@Test
+	public void mod1共変反変() throws Exception {
+
+		Tuple3<B, B, B> t3 = Tuple3.of(new B(1, 2), new B(3, 4), new B(5, 6));
+
+		Function<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple3<B, B, B> mapped = t3.<B>mod1(mapper);
+
+		assertThat(mapped._1.a, is(1));
+		assertThat(mapped._1.b, is(10));
+
+	}
+
+	@Test
+	public void mod1e共変反変() throws Exception {
+
+		Tuple3<B, B, B> t3 = Tuple3.of(new B(1, 2), new B(3, 4), new B(5, 6));
+
+		FE1<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple3<B, B, B> mapped = t3.<B>mod1e(mapper);
+
+		assertThat(mapped._1.a, is(1));
+		assertThat(mapped._1.b, is(10));
+
+	}
+
+	@Test
+	public void mod2共変反変() throws Exception {
+
+		Tuple3<B, B, B> t3 = Tuple3.of(new B(1, 2), new B(3, 4), new B(5, 6));
+
+		Function<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple3<B, B, B> mapped = t3.<B>mod2(mapper);
+
+		assertThat(mapped._2.a, is(3));
+		assertThat(mapped._2.b, is(10));
+
+	}
+
+	@Test
+	public void mod2e共変反変() throws Exception {
+
+		Tuple3<B, B, B> t3 = Tuple3.of(new B(1, 2), new B(3, 4), new B(5, 6));
+
+		FE1<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple3<B, B, B> mapped = t3.<B>mod2e(mapper);
+
+		assertThat(mapped._2.a, is(3));
+		assertThat(mapped._2.b, is(10));
+	}
+
+	@Test
+	public void mod3共変反変() throws Exception {
+
+		Tuple3<B, B, B> t3 = Tuple3.of(new B(1, 2), new B(3, 4), new B(5, 6));
+
+		Function<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple3<B, B, B> mapped = t3.<B>mod3(mapper);
+
+		assertThat(mapped._3.a, is(5));
+		assertThat(mapped._3.b, is(10));
+
+	}
+
+	@Test
+	public void mod3e共変反変() throws Exception {
+
+		Tuple3<B, B, B> t3 = Tuple3.of(new B(1, 2), new B(3, 4), new B(5, 6));
+
+		FE1<A, C> mapper = a -> new C(a.a, 10, 20);
+		Tuple3<B, B, B> mapped = t3.<B>mod3e(mapper);
+
+		assertThat(mapped._3.a, is(5));
+		assertThat(mapped._3.b, is(10));
 	}
 }

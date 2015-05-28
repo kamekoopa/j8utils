@@ -36,27 +36,27 @@ public final class Tuple3<A, B, C> {
 		return new Tuple3<>(_1, _2, _3);
 	}
 
-	public <AA> Tuple3<AA, B, C> mod1(Function<A, AA> f){
+	public <AA> Tuple3<AA, B, C> mod1(Function<? super A, ? extends AA> f){
 		return Tuple3.of(f.apply(_1), _2, _3);
 	}
 
-	public <AA> Tuple3<AA, B, C> mod1e(FE1<A, AA> f) throws Exception {
+	public <AA> Tuple3<AA, B, C> mod1e(FE1<? super A, ? extends AA> f) throws Exception {
 		return Tuple3.of(f.apply(_1), _2, _3);
 	}
 
-	public <BB> Tuple3<A, BB, C> mod2(Function<B, BB> f){
+	public <BB> Tuple3<A, BB, C> mod2(Function<? super B, ? extends BB> f){
 		return Tuple3.of(_1, f.apply(_2), _3);
 	}
 
-	public <BB> Tuple3<A, BB, C> mod2e(FE1<B, BB> f) throws Exception {
+	public <BB> Tuple3<A, BB, C> mod2e(FE1<? super B, ? extends BB> f) throws Exception {
 		return Tuple3.of(_1, f.apply(_2), _3);
 	}
 
-	public <CC> Tuple3<A, B, CC> mod3(Function<C, CC> f){
+	public <CC> Tuple3<A, B, CC> mod3(Function<? super C, ? extends CC> f){
 		return Tuple3.of(_1, _2, f.apply(_3));
 	}
 
-	public <CC> Tuple3<A, B, CC> mod3e(FE1<C, CC> f) throws Exception {
+	public <CC> Tuple3<A, B, CC> mod3e(FE1<? super C, ? extends CC> f) throws Exception {
 		return Tuple3.of(_1, _2, f.apply(_3));
 	}
 

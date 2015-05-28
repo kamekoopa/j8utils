@@ -34,19 +34,19 @@ public final class Tuple2<A, B> {
 		return new Tuple2<>(_1, _2);
 	}
 
-	public <AA> Tuple2<AA, B> mod1(Function<A, AA> f) {
+	public <AA> Tuple2<AA, B> mod1(Function<? super A, ? extends AA> f) {
 		return Tuple2.of(f.apply(_1), _2);
 	}
 
-	public <AA> Tuple2<AA, B> mod1e(FE1<A, AA> f) throws Exception {
+	public <AA> Tuple2<AA, B> mod1e(FE1<? super A, ? extends AA> f) throws Exception {
 		return Tuple2.of(f.apply(_1), _2);
 	}
 
-	public <BB> Tuple2<A, BB> mod2(Function<B, BB> f) {
+	public <BB> Tuple2<A, BB> mod2(Function<? super B, ? extends BB> f) {
 		return Tuple2.of(_1, f.apply(_2));
 	}
 
-	public <BB> Tuple2<A, BB> mod2e(FE1<B, BB> f) throws Exception {
+	public <BB> Tuple2<A, BB> mod2e(FE1<? super B, ? extends BB> f) throws Exception {
 		return Tuple2.of(_1, f.apply(_2));
 	}
 
