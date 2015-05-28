@@ -74,9 +74,9 @@ public class EitherTest {
 
 			Either<B, B> either = Either.right(new B(1, 2));
 
-			Function<A, Either<B, C>> mapper = a -> Either.left(new C(a.a, 10, 100));
+			Function<A, Either<C, C>> mapper = a -> Either.left(new C(a.a, 10, 100));
 
-			Either<B, C> mapped = either.flatMap(mapper);
+			Either<B, B> mapped = either.<B>flatMap(mapper);
 
 			assertTrue(mapped.isLeft());
 			assertThat(mapped.fold(Function.identity(), Function.identity()).a, is(1));
@@ -88,9 +88,9 @@ public class EitherTest {
 
 			Either<B, B> either = Either.right(new B(1, 2));
 
-			FE1<A, Either<B, C>> mapper = a -> Either.left(new C(a.a, 10, 100));
+			FE1<A, Either<C, C>> mapper = a -> Either.left(new C(a.a, 10, 100));
 
-			Either<B, C> mapped = either.flatMape(mapper);
+			Either<B, B> mapped = either.<B>flatMape(mapper);
 
 			assertTrue(mapped.isLeft());
 			assertThat(mapped.fold(Function.identity(), Function.identity()).a, is(1));
@@ -103,12 +103,11 @@ public class EitherTest {
 			Either<B, B> either = Either.right(new B(1, 2));
 
 			Function<A, B> fl = a -> new B(a.a, 10);
-			Function<B, C> fr = b -> new C(b.a, b.b, 100);
+			Function<A, C> fr = b -> new C(b.a, b.a, 100);
 
-			B folded = either.fold(fl, fr);
+			A folded = either.<A>fold(fl, fr);
 
 			assertThat(folded.a, is(1));
-			assertThat(folded.b, is(2));
 		}
 	}
 
