@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 public abstract class Try<A> {
 
-	public static <A> Try<A> of(SE<A> supplier){
+	public static <A> Try<A> of(SE<? extends A> supplier){
 		try {
 			return new Success<>(supplier.get());
 		}catch (Exception e){
@@ -39,39 +39,39 @@ public abstract class Try<A> {
 		return new Failure<>(e);
 	}
 
-	public abstract <B> Try<B> map(Function<A, B> f);
+	public abstract <B> Try<B> map(Function<? super A, ? extends B> f);
 
-	public abstract <B> Try<B> mape(FE1<A, B> f) throws Exception;
+	public abstract <B> Try<B> mape(FE1<? super A, ? extends B> f) throws Exception;
 
-	public abstract <B> Try<B> failableMap(FE1<A, B> f);
+	public abstract <B> Try<B> failableMap(FE1<? super A, ? extends B> f);
 
-	public abstract <B> Try<B> flatMap(Function<A, Try<B>> f);
+	public abstract <B> Try<B> flatMap(Function<? super A, ? extends Try<? extends B>> f);
 
 	public abstract Option<A> toOption();
 
 	public abstract Either<Exception, A> toEither();
 
-	public abstract <B> B fold(Function<A, B> success, Function<Exception, B> failure);
+	public abstract <B> B fold(Function<? super A, ? extends B> success, Function<Exception, ? extends B> failure);
 
-	public abstract A recover(Function<Exception, A> f);
+	public abstract A recover(Function<Exception, ? extends A> f);
 
 	public abstract boolean isSuccess();
 
 	public abstract boolean isFailure();
 
-	public <B, X> Try<X> ap(Try<B> ob, BiFunction<A, B, X> f) {
+	public <B, X> Try<X> ap(Try<? extends B> ob, BiFunction<? super A, ? super B, ? extends X> f) {
 		return this.flatMap(a -> ob.map(b -> f.apply(a, b)));
 	}
 
-	public <B, C, X> Try<X> ap(Try<B> ob, Try<C> oc, F3<A, B, C, X> f) {
+	public <B, C, X> Try<X> ap(Try<? extends B> ob, Try<? extends C> oc, F3<? super A, ? super B, ? super C, ? extends X> f) {
 		return this.flatMap(a -> ob.flatMap(b -> oc.map(c -> f.apply(a, b, c))));
 	}
 
-	public <B, C, D, X> Try<X> ap(Try<B> ob, Try<C> oc, Try<D> od, F4<A, B, C, D, X> f) {
+	public <B, C, D, X> Try<X> ap(Try<? extends B> ob, Try<? extends C> oc, Try<? extends D> od, F4<? super A, ? super B, ? super C, ? super D, ? extends X> f) {
 		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.map(d -> f.apply(a, b, c, d)))));
 	}
 
-	public <B, C, D, E, X> Try<X> ap(Try<B> ob, Try<C> oc, Try<D> od, Try<E> oe, F5<A, B, C, D, E, X> f) {
+	public <B, C, D, E, X> Try<X> ap(Try<? extends B> ob, Try<? extends C> oc, Try<? extends D> od, Try<? extends E> oe, F5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends X> f) {
 		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.flatMap(d -> oe.map( e->f.apply(a, b, c, d, e))))));
 	}
 
@@ -95,32 +95,32 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> Try<B> map(Function<A, B> f) {
+		public <B> Try<B> map(Function<? super A, ? extends B> f) {
 			return new Success<>(f.apply(a));
 		}
 
 		@Override
-		public <B> Try<B> mape(FE1<A, B> f) throws Exception {
+		public <B> Try<B> mape(FE1<? super A, ? extends B> f) throws Exception {
 			return new Success<>(f.apply(a));
 		}
 
 		@Override
-		public <B> Try<B> failableMap(FE1<A, B> f) {
+		public <B> Try<B> failableMap(FE1<? super A, ? extends B> f) {
 			return Try.of(() -> f.apply(a));
 		}
 
 		@Override
-		public <B> Try<B> flatMap(Function<A, Try<B>> f) {
-			return f.apply(a);
+		public <B> Try<B> flatMap(Function<? super A, ? extends Try<? extends B>> f) {
+			return f.apply(a).map(Function.identity());
 		}
 
 		@Override
-		public <B> B fold(Function<A, B> success, Function<Exception, B> failure) {
+		public <B> B fold(Function<? super A, ? extends B> success, Function<Exception, ? extends B> failure) {
 			return success.apply(a);
 		}
 
 		@Override
-		public A recover(Function<Exception, A> f) {
+		public A recover(Function<Exception, ? extends A> f) {
 			return a;
 		}
 
@@ -155,32 +155,32 @@ public abstract class Try<A> {
 		}
 
 		@Override
-		public <B> Try<B> map(Function<A, B> f) {
+		public <B> Try<B> map(Function<? super A, ? extends B> f) {
 			return new Failure<>(e);
 		}
 
 		@Override
-		public <B> Try<B> mape(FE1<A, B> f) throws Exception {
+		public <B> Try<B> mape(FE1<? super A, ? extends B> f) throws Exception {
 			return new Failure<>(e);
 		}
 
 		@Override
-		public <B> Try<B> failableMap(FE1<A, B> f) {
+		public <B> Try<B> failableMap(FE1<? super A, ? extends B> f) {
 			return new Failure<>(e);
 		}
 
 		@Override
-		public <B> Try<B> flatMap(Function<A, Try<B>> f) {
+		public <B> Try<B> flatMap(Function<? super A, ? extends Try<? extends B>> f) {
 			return new Failure<>(e);
 		}
 
 		@Override
-		public <B> B fold(Function<A, B> success, Function<Exception, B> failure) {
+		public <B> B fold(Function<? super A, ? extends B> success, Function<Exception, ? extends B> failure) {
 			return failure.apply(e);
 		}
 
 		@Override
-		public A recover(Function<Exception, A> f) {
+		public A recover(Function<Exception, ? extends A> f) {
 			return f.apply(e);
 		}
 

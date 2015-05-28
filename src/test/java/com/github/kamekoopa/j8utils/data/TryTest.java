@@ -16,22 +16,189 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.utils.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static com.github.kamekoopa.j8utils.test.Tools.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
 @RunWith(Enclosed.class)
 public class TryTest {
+
+	@RunWith(JUnit4.class)
+	public static class 共通 {
+
+		@Test
+		public void ofの共変反変() throws Exception {
+
+			SE<B> sup = () -> new B(1, 2);
+
+			Try<A> _try = Try.<A>of(sup);
+
+			assertTrue(_try.isSuccess());
+			assertThat(_try.recover(e -> new B(0, 0)).a, is(1));
+		}
+
+		@Test
+		public void mapの共変反変() throws Exception {
+
+			Try<B> _try = Try.of(() -> new B(1, 2));
+
+			Function<A, C> mapper = a -> new C(a.a, 10, 100);
+
+			Try<B> mapped = _try.map(mapper);
+
+			assertTrue(mapped.isSuccess());
+			assertThat(mapped.fold(Function.identity(), e -> new B(0, 0)).a, is(1));
+			assertThat(mapped.fold(Function.identity(), e -> new B(0, 0)).b, is(10));
+		}
+
+		@Test
+		public void mapeの共変反変() throws Exception {
+
+			Try<B> _try = Try.of(() -> new B(1, 2));
+
+			FE1<A, C> mapper = a -> new C(a.a, 10, 100);
+
+			Try<B> mapped = _try.mape(mapper);
+
+			assertTrue(mapped.isSuccess());
+			assertThat(mapped.fold(Function.identity(), e -> new B(0, 0)).a, is(1));
+			assertThat(mapped.fold(Function.identity(), e -> new B(0, 0)).b, is(10));
+		}
+
+		@Test
+		public void flatMapの共変反変() throws Exception {
+
+			Try<B> _try = Try.of(() -> new B(1, 2));
+
+			Function<A, Try<C>> mapper = a -> Try.of(() -> new C(a.a, 10, 100));
+
+			Try<B> mapped = _try.flatMap(mapper);
+
+			assertTrue(mapped.isSuccess());
+			assertThat(mapped.fold(Function.identity(), e -> new B(0, 0)).a, is(1));
+			assertThat(mapped.fold(Function.identity(), e -> new B(0, 0)).b, is(10));
+		}
+
+		@Test
+		public void failableMapの共変反変() throws Exception {
+
+			Try<B> _try = Try.of(() -> new B(1, 2));
+
+			FE1<A, C> mapper = a -> new C(a.a, 10, 100);
+
+			Try<B> mapped = _try.failableMap(mapper);
+
+			assertTrue(mapped.isSuccess());
+			assertThat(mapped.fold(Function.identity(), e -> new B(0, 0)).a, is(1));
+			assertThat(mapped.fold(Function.identity(), e -> new B(0, 0)).b, is(10));
+		}
+
+		@Test
+		public void foldの共変反変() throws Exception {
+
+			Try<B> _try = Try.of(() -> new B(1, 2));
+
+			Function<Exception, C> zero = e -> new C(0, 0, 0);
+			Function<A, C> f = a -> new C(a.a, a.a, 100);
+
+			B folded = _try.<B>fold(f, zero);
+
+			assertThat(folded.a, is(1));
+			assertThat(folded.b, is(1));
+		}
+
+		@Test
+		public void recoverの共変反変() throws Exception {
+
+			Try<B> _try = Try.of(() -> new B(1, 2));
+
+			Function<Exception, C> recover = e -> new C(0, 0, 0);
+
+			B recovered = _try.<B>recover(recover);
+
+			assertThat(recovered.a, is(1));
+			assertThat(recovered.b, is(2));
+		}
+
+		@Test
+		public void ap1の共変反変() throws Exception {
+
+			Try<B> t1 = Try.of(() -> new B(1, 2));
+			Try<C> t2 = Try.of(() -> new C(10, 20, 30));
+
+			BiFunction<A, A, C> f = (a1, a2) -> new C(a1.a, a1.a, a2.a);
+
+			Try<B> ap = t1.<A, B>ap(t2, f);
+
+			assertTrue(ap.isSuccess());
+			assertThat(ap.recover(e -> new B(0, 0)).a, is(1));
+			assertThat(ap.recover(e -> new B(0, 0)).b, is(1));
+		}
+
+		@Test
+		public void ap2の共変反変() throws Exception {
+
+			Try<B> t1 = Try.of(() -> new B(1, 2));
+			Try<C> t2 = Try.of(() -> new C(10, 20, 30));
+			Try<D> t3 = Try.of(() -> new D(100, 200, 300, 400));
+
+			F3<A, A, A, D> f = (a, b, c) -> new D(a.a, a.a, b.a, c.a);
+
+			Try<B> ap = t1.<A, A, B>ap(t2, t3, f);
+
+			assertTrue(ap.isSuccess());
+			assertThat(ap.recover(e -> new B(0, 0)).a, is(1));
+			assertThat(ap.recover(e -> new B(0, 0)).b, is(1));
+		}
+
+		@Test
+		public void ap3の共変反変() throws Exception {
+
+			Try<B> t1 = Try.of(() -> new B(1, 2));
+			Try<C> t2 = Try.of(() -> new C(10, 20, 30));
+			Try<D> t3 = Try.of(() -> new D(100,200, 300, 400));
+			Try<E> t4 = Try.of(() -> new E(1000,2000, 3000, 4000, 5000));
+
+			F4<A, A, A, A, E> f = (a, b, c, d) -> new E(a.a, a.a, b.a, c.a, d.a);
+
+			Try<B> ap = t1.<A, A, A, B>ap(t2, t3, t4, f);
+
+			assertTrue(ap.isSuccess());
+			assertThat(ap.recover(e -> new B(0, 0)).a, is(1));
+			assertThat(ap.recover(e -> new B(0, 0)).b, is(1));
+		}
+
+		@Test
+		public void ap4の共変反変() throws Exception {
+
+			Try<B> t1 = Try.of(() -> new B(1, 2));
+			Try<C> t2 = Try.of(() -> new C(10, 20, 30));
+			Try<D> t3 = Try.of(() -> new D(100,200, 300, 400));
+			Try<E> t4 = Try.of(() -> new E(1000,2000, 3000, 4000, 5000));
+			Try<F> t5 = Try.of(() -> new F(10000,20000, 30000, 40000, 50000, 6000));
+
+			F5<A, A, A, A, A, F> f = (a, b, c, d, e) -> new F(a.a, a.a, b.a, c.a, d.a, e.a);
+
+			Try<B> ap = t1.<A, A, A, A, B>ap(t2, t3, t4, t5, f);
+
+			assertTrue(ap.isSuccess());
+			assertThat(ap.recover(e -> new B(0, 0)).a, is(1));
+			assertThat(ap.recover(e -> new B(0, 0)).b, is(1));
+		}
+	}
 
 
 	@RunWith(JUnit4.class)
