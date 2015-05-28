@@ -19,7 +19,7 @@ package com.github.kamekoopa.j8utils.utils;
 @FunctionalInterface
 public interface FE4<A, B, C, D, X> {
 
-	static <A, B, C, D, X> FE4<A, B, C, D, X> from(F4<A, B, C, D, X> f){
+	static <A, B, C, D, X> FE4<A, B, C, D, X> from(F4<? super A, ? super B, ? super C, ? super D, ? extends X> f){
 		return f::apply;
 	}
 

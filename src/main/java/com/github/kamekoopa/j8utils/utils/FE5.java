@@ -19,7 +19,7 @@ package com.github.kamekoopa.j8utils.utils;
 @FunctionalInterface
 public interface FE5<A, B, C, D, E, X> {
 
-	static <A, B, C, D, E, X> FE5<A, B, C, D, E, X> from(F5<A, B, C, D, E, X> f){
+	static <A, B, C, D, E, X> FE5<A, B, C, D, E, X> from(F5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends X> f){
 		return f::apply;
 	}
 

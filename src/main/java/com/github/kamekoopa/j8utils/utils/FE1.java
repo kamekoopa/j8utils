@@ -21,7 +21,7 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface FE1<A, X> {
 
-	static <A, X> FE1<A, X> from(Function<A, X> f){
+	static <A, X> FE1<A, X> from(Function<? super A, ? extends X> f){
 		return f::apply;
 	}
 

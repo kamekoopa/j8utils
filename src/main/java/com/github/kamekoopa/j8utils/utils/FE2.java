@@ -21,7 +21,7 @@ import java.util.function.BiFunction;
 @FunctionalInterface
 public interface FE2<A, B, X> {
 
-	static <A, B, X> FE2<A, B, X> from(BiFunction<A, B, X> f){
+	static <A, B, X> FE2<A, B, X> from(BiFunction<? super A, ? super B, ? extends X> f){
 		return f::apply;
 	}
 
