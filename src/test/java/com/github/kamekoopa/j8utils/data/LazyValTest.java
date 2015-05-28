@@ -16,11 +16,16 @@
 
 package com.github.kamekoopa.j8utils.data;
 
+import com.github.kamekoopa.j8utils.test.Tools;
+import com.github.kamekoopa.j8utils.test.Tools.A;
+import com.github.kamekoopa.j8utils.test.Tools.B;
+import com.github.kamekoopa.j8utils.utils.SE;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.Date;
+import java.util.function.Supplier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -81,5 +86,15 @@ public class LazyValTest {
 	@Test(expected = RE.class)
 	public void 値を遅延提供するsupplierが実行時例外を投げる時その実行時例外がそのままスローされる() throws Exception {
 		LazyVal.of(() -> { throw new RE(); }).get();
+	}
+
+	@Test
+	public void 共変Supplierを受け取れる() throws Exception {
+
+		SE<B> sup = () -> new B(1, 2);
+
+		A a = LazyVal.<A>of(sup).get();
+
+		assertThat(a.a, is(1));
 	}
 }

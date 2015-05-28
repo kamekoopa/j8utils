@@ -22,14 +22,14 @@ public class LazyVal<A> {
 
 	private final Object lock = new Object();
 
-	private final SE<A> supplier;
+	private final SE<? extends A> supplier;
 	private A cache = null;
 
-	private LazyVal(SE<A> supplier){
+	private LazyVal(SE<? extends A> supplier){
 		this.supplier = supplier;
 	}
 
-	public static <A> LazyVal<A> of(SE<A> supplier){
+	public static <A> LazyVal<A> of(SE<? extends A> supplier){
 		return new LazyVal<>(supplier);
 	}
 
