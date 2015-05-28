@@ -17,6 +17,10 @@
 package com.github.kamekoopa.j8utils.data;
 
 import com.github.kamekoopa.j8utils.data.FutureBuilder.Future;
+import com.github.kamekoopa.j8utils.test.Tools.*;
+import com.github.kamekoopa.j8utils.utils.F3;
+import com.github.kamekoopa.j8utils.utils.F4;
+import com.github.kamekoopa.j8utils.utils.F5;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -25,10 +29,13 @@ import org.junit.runners.JUnit4;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(Enclosed.class)
 public class FutureBuilderTest {
@@ -36,6 +43,111 @@ public class FutureBuilderTest {
 	public static void sleep(long milli){
 		try {Thread.sleep(milli);} catch (InterruptedException e) {throw new RuntimeException(e);}
 	}
+
+
+	@RunWith(JUnit4.class)
+	public static class 共通 {
+
+		FutureBuilder builder;
+
+		@Before
+		public void setup() throws Exception {
+			this.builder = FutureBuilder.build();
+		}
+
+		@Test
+		public void run共変反変() throws Exception {
+
+			Supplier<B> sup = () -> new B(1, 1);
+
+			Try<A> t = this.builder.<A>run(sup).tryGet();
+
+			assertTrue(t.isSuccess());
+		}
+
+		@Test
+		public void map共変反変() throws Exception {
+
+			Supplier<C> sup = () -> new C(1, 1, 1);
+			Future<B> future = this.builder.<B>run(sup);
+
+			Function<A, C> mapper = a -> new C(a.a, 10, 20);
+			Try<B> t = future.<B>map(mapper).tryGet();
+
+			assertTrue(t.isSuccess());
+		}
+
+		@Test
+		public void flatMap共変反変() throws Exception {
+
+			Supplier<C> sup = () -> new C(1, 1, 1);
+			Future<B> future = this.builder.<B>run(sup);
+
+			Function<A, Future<C>> mapper = a -> this.builder.run(() -> new C(a.a, 10, 20));
+			Try<B> t = future.<B>flatMap(mapper).tryGet();
+
+			assertTrue(t.isSuccess());
+		}
+
+		@Test
+		public void ap1共変反変() throws Exception {
+
+			Future<B> f1 = this.builder.run(() -> new B(1, 2));
+			Future<C> f2 = this.builder.run(() -> new C(10, 20, 30));
+
+			BiFunction<A, A, C> f = (a1, a2) -> new C(a1.a, a2.a, 0);
+
+			Try<B> t = f1.<A, B>ap(f2, f).tryGet();
+
+			assertTrue(t.isSuccess());
+		}
+
+		@Test
+		public void ap2共変反変() throws Exception {
+
+			Future<B> f1 = this.builder.run(() -> new B(1, 2));
+			Future<C> f2 = this.builder.run(() -> new C(10, 20, 30));
+			Future<D> f3 = this.builder.run(() -> new D(100, 200, 300, 400));
+
+			F3<A, A, A, D> f = (a1, a2, a3) -> new D(a1.a, a2.a, a3.a, 0);
+
+			Try<B> t = f1.<A, A, B>ap(f2, f3, f).tryGet();
+
+			assertTrue(t.isSuccess());
+		}
+
+		@Test
+		public void ap3共変反変() throws Exception {
+
+			Future<B> f1 = this.builder.run(() -> new B(1, 2));
+			Future<C> f2 = this.builder.run(() -> new C(10, 20, 30));
+			Future<D> f3 = this.builder.run(() -> new D(100, 200, 300, 400));
+			Future<E> f4 = this.builder.run(() -> new E(1000, 2000, 3000, 4000, 5000));
+
+			F4<A, A, A, A, D> f = (a1, a2, a3, a4) -> new E(a1.a, a2.a, a3.a, a4.a, 0);
+
+			Try<B> t = f1.<A, A, A, B>ap(f2, f3, f4, f).tryGet();
+
+			assertTrue(t.isSuccess());
+		}
+
+		@Test
+		public void ap4共変反変() throws Exception {
+
+			Future<B> f1 = this.builder.run(() -> new B(1, 2));
+			Future<C> f2 = this.builder.run(() -> new C(10, 20, 30));
+			Future<D> f3 = this.builder.run(() -> new D(100, 200, 300, 400));
+			Future<E> f4 = this.builder.run(() -> new E(1000, 2000, 3000, 4000, 5000));
+			Future<F> f5 = this.builder.run(() -> new F(10000, 20000, 30000, 40000, 50000, 60000));
+
+			F5<A, A, A, A, A, D> f = (a1, a2, a3, a4, a5) -> new F(a1.a, a2.a, a3.a, a4.a, a5.a, 0);
+
+			Try<B> t = f1.<A, A, A, A, B>ap(f2, f3, f4, f5, f).tryGet();
+
+			assertTrue(t.isSuccess());
+		}
+	}
+
 
 	@RunWith(JUnit4.class)
 	public static class ExecutorServiceで実行する場合 {

@@ -44,7 +44,7 @@ public class FutureBuilder {
 		return new FutureBuilder(Option.of(executor));
 	}
 
-	public <A> Future<A> run(Supplier<A> supplier) {
+	public <A> Future<A> run(Supplier<? extends A> supplier) {
 		return new Future<>(supplier);
 	}
 
@@ -52,21 +52,21 @@ public class FutureBuilder {
 
 	public class Future<A> {
 
-		private final CompletableFuture<A> underlying;
+		protected final CompletableFuture<? extends A> underlying;
 
-		private Future(Supplier<A> supplier) {
+		private Future(Supplier<? extends A> supplier) {
 			this.underlying = supplyAsync(supplier);
 		}
 
-		private Future(CompletableFuture<A> underlying) {
+		private Future(CompletableFuture<? extends A> underlying) {
 			this.underlying = underlying;
 		}
 
-		public <B> Future<B> map(Function<A, B> f) {
+		public <B> Future<B> map(Function<? super A, ? extends B> f) {
 			return new Future<>(thenApplyAsync(f));
 		}
 
-		public <B> Future<B> flatMap(Function<A, Future<B>> f) {
+		public <B> Future<B> flatMap(Function<? super A, ? extends Future<? extends B>> f) {
 			return new Future<>(
 				thenComposeAsync(v -> f.apply(v).underlying)
 			);
@@ -109,24 +109,24 @@ public class FutureBuilder {
 			});
 		}
 
-		public <B, X> Future<X> ap(Future<B> fb, BiFunction<A, B, X> f) {
+		public <B, X> Future<X> ap(Future<? extends B> fb, BiFunction<? super A, ? super B, ? extends X> f) {
 			return this.flatMap(a -> fb.map(b -> f.apply(a, b)));
 		}
 
-		public <B, C, X> Future<X> ap(Future<B> fb, Future<C> fc, F3<A, B, C, X> f) {
+		public <B, C, X> Future<X> ap(Future<? extends B> fb, Future<? extends C> fc, F3<? super A, ? super B, ? super C, ? extends X> f) {
 			return this.flatMap(a -> fb.flatMap(b -> fc.map(c -> f.apply(a, b, c))));
 		}
 
-		public <B, C, D, X> Future<X> ap(Future<B> fb, Future<C> fc, Future<D> fd, F4<A, B, C, D, X> f) {
+		public <B, C, D, X> Future<X> ap(Future<? extends B> fb, Future<? extends C> fc, Future<? extends D> fd, F4<? super A, ? super B, ? super C, ? super D, ? extends X> f) {
 			return this.flatMap(a -> fb.flatMap(b -> fc.flatMap(c -> fd.map(d -> f.apply(a, b, c, d)))));
 		}
 
-		public <B, C, D, E, X> Future<X> ap(Future<B> fb, Future<C> fc, Future<D> fd, Future<E> fe, F5<A, B, C, D, E, X> f) {
+		public <B, C, D, E, X> Future<X> ap(Future<? extends B> fb, Future<? extends C> fc, Future<? extends D> fd, Future<? extends E> fe, F5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends X> f) {
 			return this.flatMap(a -> fb.flatMap(b -> fc.flatMap(c -> fd.flatMap(d -> fe.map( e->f.apply(a, b, c, d, e))))));
 		}
 
 
-		private CompletableFuture<A> supplyAsync(Supplier<A> supplier){
+		private CompletableFuture<A> supplyAsync(Supplier<? extends A> supplier){
 
 			return applyExecutor(
 				CompletableFuture::supplyAsync,
@@ -135,7 +135,7 @@ public class FutureBuilder {
 			);
 		}
 
-		private <B> CompletableFuture<B> thenApplyAsync(Function<A, B> f) {
+		private <B> CompletableFuture<B> thenApplyAsync(Function<? super A, ? extends B> f) {
 
 			return applyExecutor(
 				this.underlying::thenApplyAsync,
@@ -144,7 +144,7 @@ public class FutureBuilder {
 			);
 		}
 
-		private <B> CompletableFuture<B> thenComposeAsync(Function<A, CompletableFuture<B>> f) {
+		private <B> CompletableFuture<B> thenComposeAsync(Function<? super A, ? extends CompletableFuture<B>> f) {
 
 			return applyExecutor(
 				this.underlying::thenComposeAsync,
@@ -154,14 +154,14 @@ public class FutureBuilder {
 		}
 
 		private <X, B> CompletableFuture<B> applyExecutor(
-			Function<X, CompletableFuture<B>> f1,
-			BiFunction<X, Executor, CompletableFuture<B>> f2,
+			Function<? super X, CompletableFuture<? extends B>> f1,
+			BiFunction<? super X, Executor, CompletableFuture<? extends B>> f2,
 		    X x
 		) {
 
 			return executorOpt.fold(
-				() -> f1.apply(x),
-				executor -> f2.apply(x, executor)
+				() -> f1.apply(x).thenApply(Function.identity()),
+				executor -> f2.apply(x, executor).thenApply(Function.identity())
 			);
 		}
 	}
