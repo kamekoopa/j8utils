@@ -19,6 +19,10 @@ package com.github.kamekoopa.j8utils.utils;
 
 import com.github.kamekoopa.j8utils.data.Option;
 import com.github.kamekoopa.j8utils.data.Tuple2;
+import com.github.kamekoopa.j8utils.test.Tools.A;
+import com.github.kamekoopa.j8utils.test.Tools.B;
+import com.github.kamekoopa.j8utils.test.Tools.C;
+import com.github.kamekoopa.j8utils.test.Tools.D;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -26,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -295,6 +300,138 @@ public class UtilsTest {
 
 
 	@RunWith(JUnit4.class)
+	public static class リスト共通 {
+
+		List<B> list;
+		Stream<B> stream;
+
+		@Before
+		public void setup() {
+			this.list = Arrays.asList(new B(0, 0), new B(1, 1), new B(2, 2));
+			this.stream = list.stream();
+		}
+
+		@Test
+		public void get共変反変() throws Exception {
+
+			Option<A> optA = get(list, 0);
+
+			assertTrue(optA.isSome());
+		}
+
+		@Test
+		public void head共変反変() throws Exception {
+
+			A a = Utils.<A>head(list);
+
+			assertThat(a.a, is(0));
+		}
+
+		@Test
+		public void headOption共変反変() throws Exception {
+
+			Option<A> optA = Utils.<A>headOption(list);
+
+			assertTrue(optA.isSome());
+		}
+
+		@Test
+		public void tail1共変反変() throws Exception {
+
+			List<A> listA = Utils.<A>tail(list);
+
+			assertThat(listA.get(0).a, is(1));
+		}
+
+		@Test
+		public void tail2共変反変() throws Exception {
+
+			List<C> list = Arrays.asList(new C(10, 10, 10), new C(20, 20, 20));
+			List<B> listA = Utils.<B>tail(list, ArrayList::new);
+
+			assertThat(listA.get(0).a, is(20));
+		}
+
+		@Test
+		public void zipWithIndex1共変反変() throws Exception {
+
+			List<Tuple2<Integer, A>> l = Utils.<A>zipWithIndex(list);
+
+			assertThat(l.get(0)._1, is(0));
+		}
+
+		@Test
+		public void zipWithIndex2共変反変() throws Exception {
+
+			List<Tuple2<Integer, A>> l = Utils.<A>zipWithIndex(list, ArrayList::new);
+
+			assertThat(l.get(0)._1, is(0));
+		}
+
+		@Test
+		public void zipWithIndex3共変反変() throws Exception {
+
+			Stream<Tuple2<Integer, A>> s = Utils.<A>zipWithIndex(stream);
+
+			assertThat(s.collect(Collectors.toList()).get(0)._1, is(0));
+		}
+
+		@Test
+		public void zipWith共変反変() throws Exception {
+
+			BiFunction<A, A, C> zipper = (a1, a2) -> new C(a1.a, a1.a, a2.a);
+
+			Stream<B> sb = Arrays.asList(new B(1, 1), new B(2, 2)).stream();
+			Stream<C> sc = Arrays.asList(new C(10, 10, 20), new C(20, 20, 20)).stream();
+
+			Stream<B> zipped = Utils.<A, A, B>zipWith(sb, sc, zipper);
+
+			List<B> collect = zipped.collect(Collectors.toList());
+
+			assertThat(collect.get(0).a, is(1));
+			assertThat(collect.get(0).b, is(1));
+		}
+
+		@Test
+		public void zip1共変反変() throws Exception {
+
+			List<B> sb = Arrays.asList(new B(1, 1), new B(2, 2));
+			List<C> sc = Arrays.asList(new C(10, 10, 10), new C(20, 20, 20));
+
+			List<Tuple2<A, A>> zipped = Utils.<A, A>zip(sb, sc);
+
+			assertThat(zipped.get(0)._1.a, is(1));
+			assertThat(zipped.get(0)._2.a, is(10));
+		}
+
+		@Test
+		public void zip2共変反変() throws Exception {
+
+			List<C> sc = Arrays.asList(new C(1, 1, 1), new C(2, 2, 2));
+			List<D> sd = Arrays.asList(new D(10, 10, 10, 10), new D(20, 20, 20, 20));
+
+			List<Tuple2<B, C>> zipped = Utils.<B, C>zip(sc, sd, ArrayList::new);
+
+			assertThat(zipped.get(0)._1.a, is(1));
+			assertThat(zipped.get(0)._2.a, is(10));
+		}
+
+		@Test
+		public void zip3共変反変() throws Exception {
+
+			Stream<B> sb = Arrays.asList(new B(1, 1), new B(2, 2)).stream();
+			Stream<C> sc = Arrays.asList(new C(10, 10, 10), new C(20, 20, 20)).stream();
+
+			Stream<Tuple2<A, B>> zipped = Utils.<A, B>zip(sb, sc);
+
+			List<Tuple2<A, B>> collect = zipped.collect(Collectors.toList());
+			assertThat(collect.get(0)._1.a, is(1));
+			assertThat(collect.get(0)._2.b, is(10));
+		}
+	}
+
+
+	@RunWith(JUnit4.class)
 	public static class マップに要素が存在しない時 {
 
 		Map<String, Integer> map;
@@ -358,6 +495,40 @@ public class UtilsTest {
 		}
 	}
 
+
+	@RunWith(JUnit4.class)
+	public static class マップ共通 {
+
+		@Test
+		public void get共変反変() throws Exception{
+
+			Map<B, C> map = new HashMap<>();
+
+			Option<A> optA = Utils.<C, A>get(map, new C(0, 0, 0));
+
+			assertTrue(optA.isNone());
+		}
+
+		@Test
+		public void keyValueStream共変反変() throws Exception {
+
+			Map<B, C> map = new HashMap<>();
+			Stream<Tuple2<A, B>> s = Utils.<A, B>keyValueStream(map);
+
+			assertThat(s.collect(Collectors.toList()), hasSize(0));
+		}
+
+		@Test
+		public void keyValuePStream共変反変() throws Exception {
+
+			Map<B, C> map = new HashMap<>();
+			Stream<Tuple2<A, B>> s = Utils.<A, B>keyValuePStream(map);
+
+			assertThat(s.collect(Collectors.toList()), hasSize(0));
+		}
+	}
+
+
 	@RunWith(JUnit4.class)
 	public static class 何らかのIterable {
 
@@ -379,6 +550,26 @@ public class UtilsTest {
 			List<String> actual = stream.collect(Collectors.toList());
 			assertThat(actual, hasItem("a"));
 			assertThat(actual, hasItem("b"));
+		}
+
+		@Test
+		public void stream共変反変() throws Exception {
+
+			Iterable<B> it = Arrays.asList(new B(0, 0), new B(1, 1));
+
+			Stream<A> stream = Utils.<A>stream(it);
+
+			assertThat(stream.collect(Collectors.toList()).get(0).a, is(0));
+		}
+
+		@Test
+		public void pstream共変反変() throws Exception {
+
+			Iterable<B> it = Arrays.asList(new B(0, 0), new B(1, 1));
+
+			Stream<A> stream = Utils.<A>pstream(it);
+
+			assertThat(stream.collect(Collectors.toList()).get(0).a, is(0));
 		}
 
 		@Test
