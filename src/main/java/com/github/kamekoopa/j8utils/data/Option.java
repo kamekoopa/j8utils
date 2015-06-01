@@ -84,15 +84,15 @@ public abstract class Option<A> implements Iterable<A> {
 	}
 
 	public <B, C, X> Option<X> ap(Option<? extends B> ob, Option<? extends C> oc, F3<? super A, ? super B, ? super C, ? extends X> f) {
-		return this.flatMap(a -> ob.flatMap(b -> oc.map(c -> f.apply(a, b, c))));
+		return this.flatMap(a -> ob.<X>flatMap(b -> oc.map(c -> f.apply(a, b, c))));
 	}
 
 	public <B, C, D, X> Option<X> ap(Option<? extends B> ob, Option<? extends C> oc, Option<? extends D> od, F4<? super A, ? super B, ? super C, ? super D, ? extends X> f) {
-		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.map(d -> f.apply(a, b, c, d)))));
+		return this.flatMap(a -> ob.<X>flatMap(b -> oc.<X>flatMap(c -> od.map(d -> f.apply(a, b, c, d)))));
 	}
 
 	public <B, C, D, E, X> Option<X> ap(Option<? extends B> ob, Option<? extends C> oc, Option<? extends D> od, Option<? extends E> oe, F5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends X> f) {
-		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.flatMap(d -> oe.map( e->f.apply(a, b, c, d, e))))));
+		return this.flatMap(a -> ob.<X>flatMap(b -> oc.<X>flatMap(c -> od.<X>flatMap(d -> oe.map( e->f.apply(a, b, c, d, e))))));
 	}
 
 
@@ -126,12 +126,12 @@ public abstract class Option<A> implements Iterable<A> {
 
 		@Override
 		public <B> Option<B> flatMap(Function<? super A, ? extends Option<? extends B>> f) {
-			return f.apply(a).map(Function.identity());
+			return f.apply(a).map(Function.<B>identity());
 		}
 
 		@Override
 		public <B> Option<B> flatMape(FE1<? super A, ? extends Option<? extends B>> f) throws Exception {
-			return f.apply(a).map(Function.identity());
+			return f.apply(a).map(Function.<B>identity());
 		}
 
 		@Override
@@ -246,7 +246,7 @@ public abstract class Option<A> implements Iterable<A> {
 
 		@Override
 		public Option<A> or(Supplier<? extends Option<? extends A>> optionSupplier) {
-			return optionSupplier.get().map(Function.identity());
+			return optionSupplier.get().map(Function.<A>identity());
 		}
 
 		@Override

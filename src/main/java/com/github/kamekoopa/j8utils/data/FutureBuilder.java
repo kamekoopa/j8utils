@@ -67,9 +67,8 @@ public class FutureBuilder {
 		}
 
 		public <B> Future<B> flatMap(Function<? super A, ? extends Future<? extends B>> f) {
-			return new Future<>(
-				thenComposeAsync(v -> f.apply(v).underlying)
-			);
+			CompletableFuture<? extends B> completableFuture = this.thenComposeAsync(v -> f.apply(v).underlying);
+			return new Future<>(completableFuture);
 		}
 
 		public Try<A> tryGet() {
@@ -114,15 +113,15 @@ public class FutureBuilder {
 		}
 
 		public <B, C, X> Future<X> ap(Future<? extends B> fb, Future<? extends C> fc, F3<? super A, ? super B, ? super C, ? extends X> f) {
-			return this.flatMap(a -> fb.flatMap(b -> fc.map(c -> f.apply(a, b, c))));
+			return this.flatMap(a -> fb.<X>flatMap(b -> fc.map(c -> f.apply(a, b, c))));
 		}
 
 		public <B, C, D, X> Future<X> ap(Future<? extends B> fb, Future<? extends C> fc, Future<? extends D> fd, F4<? super A, ? super B, ? super C, ? super D, ? extends X> f) {
-			return this.flatMap(a -> fb.flatMap(b -> fc.flatMap(c -> fd.map(d -> f.apply(a, b, c, d)))));
+			return this.flatMap(a -> fb.<X>flatMap(b -> fc.<X>flatMap(c -> fd.map(d -> f.apply(a, b, c, d)))));
 		}
 
 		public <B, C, D, E, X> Future<X> ap(Future<? extends B> fb, Future<? extends C> fc, Future<? extends D> fd, Future<? extends E> fe, F5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends X> f) {
-			return this.flatMap(a -> fb.flatMap(b -> fc.flatMap(c -> fd.flatMap(d -> fe.map( e->f.apply(a, b, c, d, e))))));
+			return this.flatMap(a -> fb.<X>flatMap(b -> fc.<X>flatMap(c -> fd.<X>flatMap(d -> fe.map( e->f.apply(a, b, c, d, e))))));
 		}
 
 
@@ -160,8 +159,8 @@ public class FutureBuilder {
 		) {
 
 			return executorOpt.fold(
-				() -> f1.apply(x).thenApply(Function.identity()),
-				executor -> f2.apply(x, executor).thenApply(Function.identity())
+				() -> f1.apply(x).thenApply(Function.<B>identity()),
+				executor -> f2.apply(x, executor).thenApply(Function.<B>identity())
 			);
 		}
 	}

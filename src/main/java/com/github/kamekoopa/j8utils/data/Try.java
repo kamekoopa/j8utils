@@ -64,15 +64,15 @@ public abstract class Try<A> {
 	}
 
 	public <B, C, X> Try<X> ap(Try<? extends B> ob, Try<? extends C> oc, F3<? super A, ? super B, ? super C, ? extends X> f) {
-		return this.flatMap(a -> ob.flatMap(b -> oc.map(c -> f.apply(a, b, c))));
+		return this.flatMap(a -> ob.<X>flatMap(b -> oc.map(c -> f.apply(a, b, c))));
 	}
 
 	public <B, C, D, X> Try<X> ap(Try<? extends B> ob, Try<? extends C> oc, Try<? extends D> od, F4<? super A, ? super B, ? super C, ? super D, ? extends X> f) {
-		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.map(d -> f.apply(a, b, c, d)))));
+		return this.flatMap(a -> ob.<X>flatMap(b -> oc.<X>flatMap(c -> od.map(d -> f.apply(a, b, c, d)))));
 	}
 
 	public <B, C, D, E, X> Try<X> ap(Try<? extends B> ob, Try<? extends C> oc, Try<? extends D> od, Try<? extends E> oe, F5<? super A, ? super B, ? super C, ? super D, ? super E, ? extends X> f) {
-		return this.flatMap(a -> ob.flatMap(b -> oc.flatMap(c -> od.flatMap(d -> oe.map( e->f.apply(a, b, c, d, e))))));
+		return this.flatMap(a -> ob.<X>flatMap(b -> oc.<X>flatMap(c -> od.<X>flatMap(d -> oe.map( e->f.apply(a, b, c, d, e))))));
 	}
 
 
@@ -111,7 +111,7 @@ public abstract class Try<A> {
 
 		@Override
 		public <B> Try<B> flatMap(Function<? super A, ? extends Try<? extends B>> f) {
-			return f.apply(a).map(Function.identity());
+			return f.apply(a).map(Function.<B>identity());
 		}
 
 		@Override
