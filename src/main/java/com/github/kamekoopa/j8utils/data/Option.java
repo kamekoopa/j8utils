@@ -24,9 +24,7 @@ import com.github.kamekoopa.j8utils.utils.FE1;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -59,6 +57,8 @@ public abstract class Option<A> implements Iterable<A> {
 
 	public abstract boolean isNone();
 
+	public abstract Option<A> filter(Predicate<? super A> p);
+
 	public abstract <B> Option<B> map(Function<? super A, ? extends B> f);
 
 	public abstract <B> Option<B> mape(FE1<? super A, ? extends B> f) throws Exception;
@@ -74,6 +74,10 @@ public abstract class Option<A> implements Iterable<A> {
 	public abstract Option<A> ifEmpty(Supplier<? extends A> ifEmpty);
 
 	public abstract Option<A> or(Supplier<? extends Option<? extends A>> optionSupplier);
+
+	public abstract A unsafeGet() throws Exception;
+
+	public abstract Option<A> peek(Runnable ifNone, Consumer<? super A> ifSome);
 
 	public Stream<A> stream() {
 		return StreamSupport.stream(this.spliterator(), false);
@@ -115,6 +119,15 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
+		public Option<A> filter(Predicate<? super A> p){
+			if(p.test(a)){
+				return this;
+			}else{
+				return none();
+			}
+		}
+
+		@Override
 		public <B> Option<B> map(Function<? super A, ? extends B> f) {
 			return new Some<>(f.apply(a));
 		}
@@ -151,6 +164,17 @@ public abstract class Option<A> implements Iterable<A> {
 
 		@Override
 		public Option<A> or(Supplier<? extends Option<? extends A>> optionSupplier) {
+			return this;
+		}
+
+		@Override
+		public A unsafeGet() throws Exception {
+			return a;
+		}
+
+		@Override
+		public Option<A> peek(Runnable ifNone, Consumer<? super A> ifSome) {
+			ifSome.accept(a);
 			return this;
 		}
 
@@ -210,6 +234,11 @@ public abstract class Option<A> implements Iterable<A> {
 		}
 
 		@Override
+		public Option<A> filter(Predicate<? super A> p){
+			return none();
+		}
+
+		@Override
 		public <B> Option<B> map(Function<? super A, ? extends B> f) {
 			return none();
 		}
@@ -247,6 +276,17 @@ public abstract class Option<A> implements Iterable<A> {
 		@Override
 		public Option<A> or(Supplier<? extends Option<? extends A>> optionSupplier) {
 			return optionSupplier.get().map(Function.<A>identity());
+		}
+
+		@Override
+		public A unsafeGet() throws Exception {
+			throw new NoSuchElementException();
+		}
+
+		@Override
+		public Option<A> peek(Runnable ifNone, Consumer<? super A> ifSome) {
+			ifNone.run();
+			return this;
 		}
 
 		@Override

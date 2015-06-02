@@ -27,6 +27,7 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -247,6 +248,23 @@ public class OptionTest {
 		}
 
 		@Test
+		public void filterでpredicateがtrueならそのままSome() throws Exception {
+
+			Option<String> actual = option.filter(s -> s.equals("optional"));
+
+			assertTrue(actual.isSome());
+			assertThat(actual.unsafeGet(), is("optional"));
+		}
+
+		@Test
+		public void filterでpredicateがfalseならNone() throws Exception {
+
+			Option<String> actual = option.filter(s -> !s.equals("optional"));
+
+			assertTrue(actual.isNone());
+		}
+
+		@Test
 		public void mapで値を写せる() throws Exception {
 
 			Integer i = option.map(String::length).getOrElse(() -> -1);
@@ -291,6 +309,21 @@ public class OptionTest {
 
 			String value = option.getOrElse(() -> "error");
 			assertThat(value, is("optional"));
+		}
+
+		@Test
+		public void unsafeGetで値が取れる() throws Exception {
+
+			assertThat(option.unsafeGet(), is("optional"));
+		}
+
+		@Test
+		public void peekで中身を覗ける() throws Exception {
+
+			String[] mut = {""};
+			option.peek(() -> mut[0] = "none", s -> mut[0] = s);
+
+			assertThat(mut[0], is("optional"));
 		}
 
 		@Test
@@ -392,6 +425,22 @@ public class OptionTest {
 		}
 
 		@Test
+		public void filterでpredicateがtrueでもNone() throws Exception {
+
+			Option<String> actual = option.filter(s -> true);
+
+			assertTrue(actual.isNone());
+		}
+
+		@Test
+		public void filterでpredicateがfalseでもNone() throws Exception {
+
+			Option<String> actual = option.filter(s -> false);
+
+			assertTrue(actual.isNone());
+		}
+
+		@Test
 		public void mapしてもnoneのままになる() throws Exception {
 
 			assertTrue(option.map(String::length).isNone());
@@ -430,6 +479,20 @@ public class OptionTest {
 
 			String value = option.getOrElse(() -> "error");
 			assertThat(value, is("error"));
+		}
+
+		@Test(expected = NoSuchElementException.class)
+		public void unsafeGetで例外がスローされる() throws Exception {
+			option.unsafeGet();
+		}
+
+		@Test
+		public void peekで中身を覗ける() throws Exception {
+
+			String[] mut = {""};
+			option.peek(() -> mut[0] = "none", s -> mut[0] = s);
+
+			assertThat(mut[0], is("none"));
 		}
 
 		@Test

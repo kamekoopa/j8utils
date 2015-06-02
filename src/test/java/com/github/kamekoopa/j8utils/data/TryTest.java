@@ -25,6 +25,7 @@ import org.junit.runners.JUnit4;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static com.github.kamekoopa.j8utils.test.Tools.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -307,6 +308,34 @@ public class TryTest {
 
 			assertTrue(actual.isFailure());
 		}
+
+		@Test
+		public void unsafeGetで値が取れる() throws Exception {
+			assertThat(this.test.unsafeGet(), is("success"));
+		}
+
+		@Test
+		public void filterのpredicateがtrueならSuccess() throws Exception {
+
+			assertTrue(
+				this.test.filter((String str) -> !str.isEmpty(), Exception::new).isSuccess()
+			);
+		}
+
+		@Test(expected = Exception.class)
+		public void filterのpredicateがfalseなら指定した例外をくるんだFailure() throws Exception {
+			this.test.filter(String::isEmpty, Exception::new).unsafeGet();
+		}
+
+		@Test
+		public void peekで中身を覗ける() throws Exception {
+
+			String[] mut = new String[]{""};
+
+			this.test.peek(str -> mut[0] = str, e -> {throw new RuntimeException(e);});
+
+			assertThat(mut[0], is("success"));
+		}
 	}
 
 	@RunWith(JUnit4.class)
@@ -402,6 +431,37 @@ public class TryTest {
 			Try<String> actual = test.ap(tb, (a, b) -> a + b);
 
 			assertTrue(actual.isFailure());
+		}
+
+		@Test(expected = Exception.class)
+		public void unsafeGetでくるまれていた例外がスローされる() throws Exception {
+			this.test.unsafeGet();
+		}
+
+		@Test(expected = Exception.class)
+		public void filterのpredicateがtrueでもFailure() throws Exception {
+
+			Predicate<String> p = str -> !str.isEmpty();
+
+			this.test.filter(p, Exception::new).unsafeGet();
+		}
+
+		@Test(expected = Exception.class)
+		public void filterのpredicateがfalseでも先にくるまれている例外をスローする() throws Exception {
+
+			this.test.filter(
+				String::isEmpty,
+				() -> new RuntimeException("error", null)
+			).unsafeGet();
+		}
+
+		@Test
+		public void peekで中身を覗ける() throws Exception {
+
+			String[] mut = new String[]{""};
+			this.test.peek(str -> mut[0] = str, e -> mut[0] = e.getMessage());
+
+			assertThat(mut[0], is("failure"));
 		}
 	}
 }

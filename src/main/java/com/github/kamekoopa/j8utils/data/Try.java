@@ -18,8 +18,7 @@ package com.github.kamekoopa.j8utils.data;
 
 import com.github.kamekoopa.j8utils.utils.*;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.*;
 
 public abstract class Try<A> {
 
@@ -38,6 +37,8 @@ public abstract class Try<A> {
 	public static <A> Failure<A> failure(Exception e){
 		return new Failure<>(e);
 	}
+
+	public abstract Try<A> filter(Predicate<? super A> p, Supplier<Exception> s);
 
 	public abstract <B> Try<B> map(Function<? super A, ? extends B> f);
 
@@ -58,6 +59,10 @@ public abstract class Try<A> {
 	public abstract boolean isSuccess();
 
 	public abstract boolean isFailure();
+
+	public abstract A unsafeGet() throws Exception;
+
+	public abstract Try<A> peek(Consumer<? super A> ifSuccess, Consumer<Exception> ifFailure);
 
 	public <B, X> Try<X> ap(Try<? extends B> ob, BiFunction<? super A, ? super B, ? extends X> f) {
 		return this.flatMap(a -> ob.map(b -> f.apply(a, b)));
@@ -92,6 +97,15 @@ public abstract class Try<A> {
 		@Override
 		public Either<Exception, A> toEither() {
 			return Either.right(a);
+		}
+
+		@Override
+		public Try<A> filter(Predicate<? super A> p, Supplier<Exception> s){
+			if(p.test(a)){
+				return this;
+			}else{
+				return Try.failure(s.get());
+			}
 		}
 
 		@Override
@@ -133,6 +147,17 @@ public abstract class Try<A> {
 		public boolean isFailure() {
 			return false;
 		}
+
+		@Override
+		public A unsafeGet() throws Exception {
+			return a;
+		}
+
+		@Override
+		public Try<A> peek(Consumer<? super A> ifSuccess, Consumer<Exception> ifFailure){
+			ifSuccess.accept(a);
+			return this;
+		}
 	}
 
 
@@ -152,6 +177,11 @@ public abstract class Try<A> {
 		@Override
 		public Either<Exception, A> toEither() {
 			return Either.left(e);
+		}
+
+		@Override
+		public Try<A> filter(Predicate<? super A> p, Supplier<Exception> s){
+			return this;
 		}
 
 		@Override
@@ -192,6 +222,17 @@ public abstract class Try<A> {
 		@Override
 		public boolean isFailure() {
 			return true;
+		}
+
+		@Override
+		public A unsafeGet() throws Exception {
+			throw e;
+		}
+
+		@Override
+		public Try<A> peek(Consumer<? super A> ifSuccess, Consumer<Exception> ifFailure){
+			ifFailure.accept(e);
+			return this;
 		}
 	}
 }
