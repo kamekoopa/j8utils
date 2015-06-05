@@ -151,6 +151,24 @@ public class Utils {
 			.flatMap(Option::stream);
 	}
 
+	public static <T> List<T> takeWhile(List<? extends T> list, Predicate<? super T> p){
+		return takeWhile(list, p, ArrayList::new);
+	}
+
+	public static <T> List<T> takeWhile(List<? extends T> list, Predicate<? super T> p, Supplier<? extends List<T>> factory){
+
+		List<T> acc = factory.get();
+		for(T t : list){
+			if(p.test(t)){
+				acc.add(t);
+			}else{
+				break;
+			}
+		}
+
+		return acc;
+	}
+
 	private static class Zipped<A, B, C> implements Spliterator<C> {
 
 		private final Spliterator<? extends A> a;

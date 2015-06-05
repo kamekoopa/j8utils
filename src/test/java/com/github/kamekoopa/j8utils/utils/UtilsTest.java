@@ -124,6 +124,14 @@ public class UtilsTest {
 			List<Tuple2<Integer, String>> zipWithIndex = zipWithIndex(stream).collect(Collectors.toList());
 			assertThat(zipWithIndex, is(empty()));
 		}
+
+		@Test
+		public void takeWhileで空のリストが取得できる() throws Exception {
+
+			List<String> took = takeWhile(list, str -> str.equals("1"));
+
+			assertThat(took, is(empty()));
+		}
 	}
 
 
@@ -247,6 +255,17 @@ public class UtilsTest {
 			assertThat(zipWithIndex.get(1)._2, is("second"));
 			assertThat(zipWithIndex.get(2)._1, is(2));
 			assertThat(zipWithIndex.get(2)._2, is("third"));
+		}
+
+		@Test
+		public void takeWhileで条件を満たさなくなるまでのリストが取得できる() throws Exception {
+
+			List<String> list = Arrays.asList("1", "1", "1", "2", "1");
+
+			List<String> took = takeWhile(list, str -> str.equals("1"));
+
+			assertThat(took, hasSize(3));
+			assertThat(took, everyItem(is("1")));
 		}
 	}
 
